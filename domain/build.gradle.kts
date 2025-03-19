@@ -36,6 +36,9 @@ android {
 
 dependencies {
 
+    implementation(libs.converter.moshi)
+
+
     implementation(libs.hilt.android)
      ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.paging.compose)
