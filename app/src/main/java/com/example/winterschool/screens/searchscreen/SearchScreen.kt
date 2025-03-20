@@ -6,7 +6,10 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -137,30 +141,29 @@ fun SearchScreen() {
             }
 
             errorMessage != null -> {
-                Log.d("errorMessage", "SearchScreen:${state.errorMessage}")
-//                Column(
-//                    modifier = Modifier.fillMaxSize(),
-//                    verticalArrangement = Arrangement.Center,
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Text(modifier = Modifier.padding(12.dp), text = stringResource(R.string.error))
-//                    Text(
-//                        modifier = Modifier
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .background(Color.Blue)
-//                            .padding(vertical = 10.dp, horizontal = 24.dp)
-//                            .clickable {
-//                                searchViewModel.keywordInput("")
-//                            },
-//                        text = stringResource(R.string.try_again),
-//                        color = Color.White
-//                    )
-//                }
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(modifier = Modifier.padding(12.dp), text = stringResource(R.string.error))
+                    Text(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.Blue)
+                            .padding(vertical = 10.dp, horizontal = 24.dp)
+                            .clickable {
+                                searchViewModel.keywordInput("")
+                            },
+                        text = stringResource(R.string.try_again),
+                        color = Color.White
+                    )
+                }
             }
 
             else -> {
                 SearchScreenSuccess(state.postBooks)
-                Log.d("else", "SearchScreen: SUCCESS")
             }
 
         }
