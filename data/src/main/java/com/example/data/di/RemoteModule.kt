@@ -2,7 +2,7 @@ package com.example.data.di
 
 import com.example.data.remote.BooksAPI
 import com.example.data.remote.BooksRepositoryImpl
-import com.example.data.remote.mappers.ItemsMapper
+import com.example.data.remote.mappers.BooksMapper
 import com.example.domain.BooksRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -56,8 +56,8 @@ object RemoteModule {
     @Provides
     fun provideBooksRepository(
         booksAPI: BooksAPI,
-        itemsMapper: ItemsMapper,
+        booksMapper: BooksMapper,
     ): BooksRepository {
-        return BooksRepositoryImpl(booksAPI, itemsMapper)
+        return BooksRepositoryImpl(booksAPI, booksMapper)
     }
 }
