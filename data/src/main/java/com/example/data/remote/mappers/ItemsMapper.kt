@@ -4,9 +4,7 @@ import com.example.data.remote.entities.ItemsEntity
 import com.example.data.remote.entities.VolumeInfoEntity
 import com.example.domain.models.Items
 import com.example.domain.models.VolumeInfo
-import dagger.Provides
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class ItemsMapper @Inject constructor(

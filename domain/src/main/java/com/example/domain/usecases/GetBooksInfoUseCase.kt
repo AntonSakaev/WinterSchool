@@ -1,6 +1,5 @@
 package com.example.domain.usecases
 
-import android.util.Log
 import com.example.domain.BooksRepository
 import com.example.domain.models.Books
 import com.example.domain.utils.OperationResult

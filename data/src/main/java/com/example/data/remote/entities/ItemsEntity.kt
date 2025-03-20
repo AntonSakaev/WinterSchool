@@ -2,7 +2,6 @@ package com.example.data.remote.entities
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import javax.inject.Inject
 
 @JsonClass(generateAdapter = true)
 data class ItemsEntity (
