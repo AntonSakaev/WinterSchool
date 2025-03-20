@@ -1,5 +1,6 @@
 package com.example.data.remote
 
+import android.util.Log
 import com.example.data.remote.mappers.BooksMapper
 import com.example.domain.BooksRepository
 import com.example.domain.models.Books
@@ -16,8 +17,9 @@ class BooksRepositoryImpl
 ) : BooksRepository, RemoteDataSource() {
 
     override suspend fun getBooksInfo(request: String): OperationResult<Books> {
-        return safeApiCall {  booksAPI.getBooksInfo(request)}.flatMapIfSuccess { booksEntity ->
-          booksMapper(booksEntity).toSuccessResult()
+
+        return safeApiCall { booksAPI.getBooksInfo(request) }.flatMapIfSuccess { booksEntity ->
+            booksMapper(booksEntity).toSuccessResult()
         }
     }
 }

@@ -4,11 +4,12 @@ import com.example.data.remote.entities.BooksEntity
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface BooksAPI {
 
-    @GET("volumes?q={request}")
+    @GET("volumes")
     suspend fun getBooksInfo(
-        @Path("request") request: String
+        @Query("q") bookTitle: String
     ): Response<BooksEntity>
 }

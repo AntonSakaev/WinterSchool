@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WinterSchool</string>
+    <string name="enter_some_words">Enter some words</string>
+    <string name="Enter_the_title_of_the_book_you_are_looking_for">Введите название книги, которую ищете</string>
+    <string name="error">Ошибка выполнения запроса попробуйте повторить</string>
+    <string name="try_again">Попробовать ещё</string>
+    <string name="no_authors">Нет авторов</string>
 </resources>

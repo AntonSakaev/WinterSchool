@@ -32,10 +32,11 @@ class SearchScreenViewModel @Inject constructor(
                 if (keyword != "") {
                     _uiState.update { state ->
                         state.copy(
-                            isLoading = true
+                            isLoading = true,
+                            isNoKeyWord = false
                         )
                     }
-                    getBooksInfoUseCase.getBooksInfo(keyword).handle(
+                    getBooksInfoUseCase(keyword).handle(
                         onSuccess = { postBooks ->
                             _uiState.update { state ->
                                 state.copy(
@@ -50,7 +51,7 @@ class SearchScreenViewModel @Inject constructor(
                 } else {
                     _uiState.update { state ->
                         state.copy(
-                            isLoading = false
+                           isNoKeyWord = true
                         )
                     }
                 }

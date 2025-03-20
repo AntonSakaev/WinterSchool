@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 import javax.inject.Inject
 
 @JsonClass(generateAdapter = true)
-data class ItemsEntity @Inject constructor(
+data class ItemsEntity (
     @Json(name = "kind") var kind: String? = null,
     @Json(name = "id") var id: String? = null,
     @Json(name = "etag") var etag: String? = null,
