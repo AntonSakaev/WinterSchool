@@ -1,8 +1,5 @@
 package com.example.domain.utils
 
-
-
-
 fun <In, Out> OperationResult<In>.flatMapIfSuccess(
     block: (In) -> OperationResult<Out>
 ): OperationResult<Out> {
@@ -13,5 +10,6 @@ fun <In, Out> OperationResult<In>.flatMapIfSuccess(
     }
 }
 
-/** Преобразует [T] в [OperationResult.Success] */
 fun <T> T.toSuccessResult(): OperationResult.Success<T> = OperationResult.Success(this)
+
+
