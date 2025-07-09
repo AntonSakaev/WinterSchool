@@ -1,5 +1,7 @@
 package com.example.data.di
 
+import com.example.data.local.pfrefs.mappers.ToSearchSettingsEntityMapper
+import com.example.data.local.pfrefs.mappers.ToSearchSettingsMapper
 import com.example.data.remote.mappers.BooksMapper
 import com.example.data.remote.mappers.ImageLinksMapper
 import com.example.data.remote.mappers.ItemsMapper
@@ -31,5 +33,15 @@ object MapperModule {
     @Provides
     fun provideBooksMapper(itemsMapper: ItemsMapper): BooksMapper {
         return BooksMapper(itemsMapper)
+    }
+
+    @Provides
+    fun provideToSearchSettingsEntityMapper(): ToSearchSettingsEntityMapper {
+        return ToSearchSettingsEntityMapper()
+    }
+
+    @Provides
+    fun provideToSearchSettingsMapper(): ToSearchSettingsMapper {
+        return ToSearchSettingsMapper()
     }
 }

@@ -1,8 +1,8 @@
-package com.example.domain.usecases
+package com.example.domain.remote.usecases
 
-import com.example.domain.BooksRepository
-import com.example.domain.models.Books
-import com.example.domain.utils.OperationResult
+import com.example.domain.remote.BooksRepository
+import com.example.domain.remote.models.Books
+import com.example.domain.remote.utils.OperationResult
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

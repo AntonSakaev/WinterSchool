@@ -1,6 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
-import com.example.domain.models.Books
+import com.example.domain.remote.models.Books
 
 data class SearchScreenState (
     val postBooks: Books? = null,

@@ -1,6 +1,6 @@
 package com.example.data.remote
 
-import com.example.domain.utils.OperationResult
+import com.example.domain.remote.utils.OperationResult
 import retrofit2.Response
 
 abstract class RemoteDataSource {

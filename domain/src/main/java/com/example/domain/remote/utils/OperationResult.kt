@@ -1,4 +1,4 @@
-package com.example.domain.utils
+package com.example.domain.remote.utils
 
     sealed interface OperationResult<out T> {
         class Success<T>(val data: T) : OperationResult<T>

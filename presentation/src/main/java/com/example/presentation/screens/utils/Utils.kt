@@ -1,6 +1,6 @@
 package dev.surf.retrofitlesson.presentation.screens.utils
 
-import com.example.domain.utils.OperationResult
+import com.example.domain.remote.utils.OperationResult
 
 
 suspend fun <T> OperationResult<T>.handle(

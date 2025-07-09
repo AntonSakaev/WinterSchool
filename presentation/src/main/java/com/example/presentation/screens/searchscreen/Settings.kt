@@ -1,5 +1,8 @@
 package com.example.presentation.screens.searchscreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,7 +29,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,12 +39,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
@@ -48,92 +51,136 @@ import com.example.presentation.screens.components.items.IconsContainer
 import com.example.presentation.theme.Blue
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Bold_18
-import com.example.presentation.theme.Gray
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Regular_14
 import com.example.presentation.theme.Regular_16
 import com.example.presentation.theme.Rose
 import com.example.presentation.theme.White
+import kotlinx.coroutines.delay
 
-@Preview
+
+
 @Composable
 fun Settings(
-//    isVisible: Boolean,
-//                 onDismiss: () -> Unit,
-//                 content: @Composable () -> Unit
+    innerPaddingValues: PaddingValues,
+    searchViewModel: SearchScreenViewModel,
+    onDismiss: () -> Unit
 ) {
-    // if (isVisible) {
-    var searchText by rememberSaveable { mutableStateOf("") }
-    val interactionSource = remember { MutableInteractionSource() }
-    var sortByDate by remember { mutableStateOf(false) }
-    var bestMatch by remember { mutableStateOf(false) }
+    val params by searchViewModel.searchParams.collectAsState()
+    var searchText by rememberSaveable { mutableStateOf(params.authorName) }
+    var sortByDateTemp by remember { mutableStateOf(params.sortByDate) }
+    var bestMatchTemp by remember { mutableStateOf(params.bestMatch) }
 
-    val applyButtonIsEnabled by remember { mutableStateOf(bestMatch || sortByDate || searchText.isNotEmpty()) }
+    val interactionSource = remember { MutableInteractionSource() }
+    var visible by remember { mutableStateOf(false) }
+    var applyButtonIsEnabled by remember { mutableStateOf(false) }
+
+
+    //Для запуска анимации при входе меням visible
+    LaunchedEffect(true) {
+        visible = true
+        searchViewModel.getSearchSettings()
+    }
+
+    //задержка для отыгрывания анимации перед закрытием окна
+    LaunchedEffect(visible) {
+        if (!visible) {
+            delay(10)
+            onDismiss()
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.2f))
+            .padding(innerPaddingValues)
+            .padding(top = 28.dp)
+            .background(Color.Black.copy(alpha = 0.4f))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {/* onDismiss()*/ }, // Закрытие при клике вне окна
+                indication = null,
+                onClick = { visible = false }
+            ),
         contentAlignment = Alignment.TopCenter,
     ) {
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            color = White,
-            shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
-            shadowElevation = 8.dp,
-
+        AnimatedVisibility(
+            visible = visible,
+            enter = slideInVertically(initialOffsetY = { -it }),
+            exit = slideOutVertically(targetOffsetY = { -it }),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {} // Пустой обработчик для блокировки кликов по поверхности
+                    ),
+                color = White,
+                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
             ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 20.dp)
-            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
 
-                Title()
+                    Title { visible = false }
 
-                SearchField(
-                    searchText = searchText,
-                    onValueChange = { searchText = it },
-                    interactionSource = interactionSource
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Text(
-                    text = stringResource(R.string.sort_by),
-                    style = Bold_16
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row {
-                    FilterChip(
-                        text = stringResource(R.string.by_data),
-                        selected = sortByDate,
-                        onSelect = { sortByDate = it }
+                    SearchField(
+                        searchText = searchText,
+                        onValueChange = {
+                            searchText = it
+                            applyButtonIsEnabled = true
+                        },
+                        interactionSource = interactionSource
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    FilterChip(
-                        text = stringResource(R.string.best_match),
-                        selected = bestMatch,
-                        onSelect = { bestMatch = it }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Text(
+                        text = stringResource(R.string.sort_by),
+                        style = Bold_16
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row {
+                        FilterChip(
+                            text = stringResource(R.string.by_data),
+                            selected = sortByDateTemp,
+                            onSelect = {
+                                applyButtonIsEnabled = true
+                                sortByDateTemp = it
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        FilterChip(
+                            text = stringResource(R.string.best_match),
+                            selected = bestMatchTemp,
+                            onSelect = {
+                                applyButtonIsEnabled = true
+                                bestMatchTemp = it
+                            }
+                        )
+                    }
+                    ApplyButton(
+                        enabled = applyButtonIsEnabled,
+                        searchText = searchText,
+                        sortByDateTemp = sortByDateTemp,
+                        bestMatchTemp = bestMatchTemp,
+                        searchViewModel = searchViewModel
                     )
                 }
-
-                ApplyButton(enabled = applyButtonIsEnabled)
             }
-
         }
     }
+
+
 }
 
+
 @Composable
-fun Title() {
+fun Title(onExitClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,7 +195,10 @@ fun Title() {
         )
         Icon(
             imageVector = Icons.Clear,
-            contentDescription = stringResource(R.string.clear)
+            contentDescription = stringResource(R.string.clear),
+            modifier = Modifier.clickable {
+                onExitClick()
+            }
         )
     }
 }
@@ -160,6 +210,7 @@ fun SearchField(
     onValueChange: (String) -> Unit,
     interactionSource: InteractionSource
 ) {
+
     Text(
         text = stringResource(R.string.authors),
         style = Bold_16
@@ -226,12 +277,25 @@ private fun FilterChip(
 }
 
 @Composable
-private fun ApplyButton(enabled: Boolean) {
+private fun ApplyButton(
+    enabled: Boolean,
+    searchText: String,
+    sortByDateTemp: Boolean,
+    bestMatchTemp: Boolean,
+    searchViewModel: SearchScreenViewModel
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 30.dp, bottom = 22.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                searchViewModel.saveSearchSettings(searchText, sortByDateTemp, bestMatchTemp)
+            }
     ) {
+
         Text(
             text = stringResource(R.string.apply),
             style = if (enabled) Regular_16.copy(color = White) else Regular_16,

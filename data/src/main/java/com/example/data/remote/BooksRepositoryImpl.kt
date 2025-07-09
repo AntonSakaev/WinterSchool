@@ -1,11 +1,11 @@
 package com.example.data.remote
 
 import com.example.data.remote.mappers.BooksMapper
-import com.example.domain.BooksRepository
-import com.example.domain.models.Books
-import com.example.domain.utils.OperationResult
-import com.example.domain.utils.flatMapIfSuccess
-import com.example.domain.utils.toSuccessResult
+import com.example.domain.remote.BooksRepository
+import com.example.domain.remote.models.Books
+import com.example.domain.remote.utils.OperationResult
+import com.example.domain.remote.utils.flatMapIfSuccess
+import com.example.domain.remote.utils.toSuccessResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

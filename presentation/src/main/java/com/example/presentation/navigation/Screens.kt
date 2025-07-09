@@ -11,4 +11,7 @@ sealed class Screens () {
 
     @Serializable
     data class DetailScreen (val bookId: Int) :Screens()
+
+    @Serializable
+    data object SettingsScreen: Screens()
 }

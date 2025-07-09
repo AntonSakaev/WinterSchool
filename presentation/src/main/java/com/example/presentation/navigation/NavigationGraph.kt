@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.presentation.screens.searchscreen.SearchScreen
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
+import com.example.presentation.screens.searchscreen.Settings
 
 @Composable
 fun NavigationGraph(
@@ -16,12 +17,15 @@ fun NavigationGraph(
 ) {
 
     val searchViewModel: SearchScreenViewModel = hiltViewModel()
+    val navigationAction = NavigationAction(navController)
 
     NavHost(navController, startDestination = Screens.SearchScreen) {
+
         composable<Screens.SearchScreen> {
             SearchScreen(
                 searchViewModel = searchViewModel,
-                innerPaddingValues = innerPadding
+                innerPaddingValues = innerPadding,
+                onSettingsClick = {navigationAction.toSettingsScreen()}
             )
         }
 
@@ -31,6 +35,12 @@ fun NavigationGraph(
 
         composable<Screens.DetailScreen> {
 
+        }
+
+        composable<Screens.SettingsScreen> {
+            Settings(innerPadding, searchViewModel) {
+                navigationAction.toSearchScreen()
+            }
         }
     }
 }

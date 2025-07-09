@@ -52,6 +52,13 @@ val Regular_14 = TextStyle(
     fontWeight = FontWeight.Normal
 )
 
+val Regular_12 = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontSize = 12.sp,
+    color = Black,
+    fontWeight = FontWeight.Normal
+)
+
 val Medium_12 = TextStyle(
     fontFamily = FontFamily.Default,
     fontSize = 12.sp,

@@ -1,7 +1,7 @@
-package com.example.domain
+package com.example.domain.remote
 
-import com.example.domain.models.Books
-import com.example.domain.utils.OperationResult
+import com.example.domain.remote.models.Books
+import com.example.domain.remote.utils.OperationResult
 import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {

@@ -1,7 +1,7 @@
 package com.example.data.remote.mappers
 
 import com.example.data.remote.entities.ImageLinksEntity
-import com.example.domain.models.ImageLinks
+import com.example.domain.remote.models.ImageLinks
 import javax.inject.Inject
 
 class ImageLinksMapper @Inject constructor() : (ImageLinksEntity) -> ImageLinks {

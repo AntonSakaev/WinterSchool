@@ -1,4 +1,4 @@
-package com.example.domain.utils
+package com.example.domain.remote.utils
 
 fun <In, Out> OperationResult<In>.flatMapIfSuccess(
     block: (In) -> OperationResult<Out>

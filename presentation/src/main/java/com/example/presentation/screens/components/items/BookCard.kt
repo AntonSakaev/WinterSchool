@@ -34,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.domain.models.VolumeInfo
+import com.example.domain.remote.models.VolumeInfo
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Favorite
 import com.example.presentation.theme.LightGray

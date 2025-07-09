@@ -13,8 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.example.domain.models.Books
+import com.example.domain.remote.models.Books
 import com.example.presentation.screens.components.items.BookCard
 
 @Composable

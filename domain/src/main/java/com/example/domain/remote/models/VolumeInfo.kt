@@ -1,4 +1,4 @@
-package com.example.domain.models
+package com.example.domain.remote.models
 
 data class VolumeInfo(
     var title: String? = null,

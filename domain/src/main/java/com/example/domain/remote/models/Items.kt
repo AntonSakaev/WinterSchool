@@ -1,4 +1,4 @@
-package com.example.domain.models
+package com.example.domain.remote.models
 
 data class Items(
     var kind: String? = null,

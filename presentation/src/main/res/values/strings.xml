@@ -17,4 +17,5 @@
     <string name="best_match">Лучшее совпадение</string>
     <string name="apply">Применить</string>
     <string name="enter_author">Введите автора</string>
+    <string name="sort_by_date">Сортировать по дате</string>
 </resources>
