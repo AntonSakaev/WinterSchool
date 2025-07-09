@@ -1,9 +1,9 @@
-package dev.surf.retrofitlesson.presentation.screens.utils
+package com.example.presentation.screens.utils
 
 import com.example.domain.remote.utils.OperationResult
 
 
-suspend fun <T> OperationResult<T>.handle(
+fun <T> OperationResult<T>.handle(
     onSuccess: (data: T) -> Unit,
     onError: (message: String) -> Unit = {},
     onLoading: () -> Unit = {},

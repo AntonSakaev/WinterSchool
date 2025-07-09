@@ -8,7 +8,7 @@ import com.example.domain.local.prefs.usecases.GetSearchSettings
 import com.example.domain.local.prefs.usecases.SaveSearchSettings
 import com.example.domain.remote.usecases.GetBooksInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.surf.retrofitlesson.presentation.screens.utils.handle
+import com.example.presentation.screens.utils.handle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow

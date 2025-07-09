@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -38,8 +37,8 @@ import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.screens.components.icons.Options
 import com.example.presentation.screens.components.icons.Search
 import com.example.presentation.screens.components.items.IconsContainer
-import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Blue
+import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Rose
 
 

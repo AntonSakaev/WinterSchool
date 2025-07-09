@@ -31,7 +31,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +56,6 @@ import com.example.presentation.theme.Regular_16
 import com.example.presentation.theme.Rose
 import com.example.presentation.theme.White
 import kotlinx.coroutines.delay
-
 
 
 @Composable
