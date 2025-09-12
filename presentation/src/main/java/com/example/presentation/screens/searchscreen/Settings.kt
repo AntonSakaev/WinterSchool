@@ -166,7 +166,8 @@ fun Settings(
                         searchText = searchText,
                         sortByDateTemp = sortByDateTemp,
                         bestMatchTemp = bestMatchTemp,
-                        searchViewModel = searchViewModel
+                        searchViewModel = searchViewModel,
+                        onDismiss = onDismiss
                     )
                 }
             }
@@ -280,7 +281,8 @@ private fun ApplyButton(
     searchText: String,
     sortByDateTemp: Boolean,
     bestMatchTemp: Boolean,
-    searchViewModel: SearchScreenViewModel
+    searchViewModel: SearchScreenViewModel,
+    onDismiss: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -288,9 +290,10 @@ private fun ApplyButton(
             .padding(top = 30.dp, bottom = 22.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) {
                 searchViewModel.saveSearchSettings(searchText, sortByDateTemp, bestMatchTemp)
+                onDismiss()
             }
     ) {
 
