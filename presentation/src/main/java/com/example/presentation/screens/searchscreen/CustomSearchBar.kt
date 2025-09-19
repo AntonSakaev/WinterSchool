@@ -46,11 +46,11 @@ import com.example.presentation.theme.Rose
 @Composable
 fun CustomSearchBar(
     onValueChange: (String) -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    isSettingsEnabled: Boolean
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
-
     Row(
         modifier = Modifier
             .height(32.dp)
@@ -109,13 +109,13 @@ fun CustomSearchBar(
             modifier = Modifier
                 .size(32.dp)
                 .background(color = Rose, shape = RoundedCornerShape(12.dp))
-                .clickable { onFilterClick ()},
+                .clickable { onFilterClick() },
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Options,
                 contentDescription = stringResource(R.string.filter),
-                tint = if (searchText == "") LightGray else Blue //заменить условие на наличие фильтров
+                tint = if (!isSettingsEnabled) LightGray else Blue
             )
         }
     }

@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.screens.components.icons.More
@@ -57,7 +58,6 @@ import com.example.presentation.theme.Rose
 import com.example.presentation.theme.White
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun Settings(
     innerPaddingValues: PaddingValues,
@@ -71,7 +71,7 @@ fun Settings(
 
     val interactionSource = remember { MutableInteractionSource() }
     var visible by remember { mutableStateOf(false) }
-    var applyButtonIsEnabled by remember { mutableStateOf(false) }
+    var applyButtonIsEnabled by remember { mutableStateOf(SearchSettings()) }
 
 
     //Для запуска анимации при входе меням visible
@@ -129,7 +129,9 @@ fun Settings(
                         searchText = searchText,
                         onValueChange = {
                             searchText = it
-                            applyButtonIsEnabled = true
+                            applyButtonIsEnabled = applyButtonIsEnabled.copy(
+                                changedName = true
+                            )
                         },
                         interactionSource = interactionSource
                     )
@@ -147,7 +149,8 @@ fun Settings(
                             text = stringResource(R.string.by_data),
                             selected = sortByDateTemp,
                             onSelect = {
-                                applyButtonIsEnabled = true
+                                applyButtonIsEnabled =
+                                    applyButtonIsEnabled.copy(sortByDate = !applyButtonIsEnabled.sortByDate)
                                 sortByDateTemp = it
                             }
                         )
@@ -156,7 +159,8 @@ fun Settings(
                             text = stringResource(R.string.best_match),
                             selected = bestMatchTemp,
                             onSelect = {
-                                applyButtonIsEnabled = true
+                                applyButtonIsEnabled =
+                                    applyButtonIsEnabled.copy(bestMatch =  !applyButtonIsEnabled.bestMatch)
                                 bestMatchTemp = it
                             }
                         )
@@ -277,7 +281,7 @@ private fun FilterChip(
 
 @Composable
 private fun ApplyButton(
-    enabled: Boolean,
+    enabled: SearchSettings,
     searchText: String,
     sortByDateTemp: Boolean,
     bestMatchTemp: Boolean,
@@ -299,11 +303,11 @@ private fun ApplyButton(
 
         Text(
             text = stringResource(R.string.apply),
-            style = if (enabled) Regular_16.copy(color = White) else Regular_16,
+            style = if (enabled.isEnabled()) Regular_16.copy(color = White) else Regular_16,
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = if (enabled) Blue else Rose,
+                    color = if (enabled.isEnabled()) Blue else Rose,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 24.dp, vertical = 10.dp)
