@@ -25,12 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.theme.Blue
@@ -42,6 +44,9 @@ fun SearchScreen(
     innerPaddingValues: PaddingValues,
     onSettingsClick: () -> Unit
 ) {
+    val searchSettings by searchViewModel.searchParams.collectAsState()
+   val isSettingsEnabled by remember { derivedStateOf {  searchSettings.isEnabled()} }
+
 
     LaunchedEffect(true) {
         searchViewModel.getSearchSettings()
@@ -56,21 +61,20 @@ fun SearchScreen(
 
         CustomSearchBar(
             onValueChange = searchViewModel::keywordInput,
-            onFilterClick = { onSettingsClick() }
+            onFilterClick = { onSettingsClick() },
+            isSettingsEnabled = isSettingsEnabled
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-        DisplaySettings(searchViewModel)
+        DisplaySettings(searchViewModel, searchSettings)
         SearchScreenStateActions(searchViewModel)
     }
 
 }
 
 @Composable
-fun DisplaySettings(searchViewModel: SearchScreenViewModel) {
-    val searchSettings by searchViewModel.searchParams.collectAsState()
-
-    LazyVerticalGrid(
+fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: SearchSettings) {
+   LazyVerticalGrid(
         modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.screens.components.icons.More
@@ -57,10 +58,6 @@ import com.example.presentation.theme.Rose
 import com.example.presentation.theme.White
 import kotlinx.coroutines.delay
 
-private data class SearchFilterParams(
-    val sortByDate: Boolean, val bestMatch: Boolean
-)
-
 @Composable
 fun Settings(
     innerPaddingValues: PaddingValues,
@@ -69,18 +66,12 @@ fun Settings(
 ) {
     val params by searchViewModel.searchParams.collectAsState()
     var searchText by rememberSaveable { mutableStateOf(params.authorName) }
-    var filterParams by remember {
-        mutableStateOf(
-            SearchFilterParams(
-                params.sortByDate,
-                params.bestMatch
-            )
-        )
-    }
+    var sortByDateTemp by remember { mutableStateOf(params.sortByDate) }
+    var bestMatchTemp by remember { mutableStateOf(params.bestMatch) }
 
     val interactionSource = remember { MutableInteractionSource() }
     var visible by remember { mutableStateOf(false) }
-    var applyButtonIsEnabled by remember { mutableStateOf(false) }
+    var applyButtonIsEnabled by remember { mutableStateOf(SearchSettings()) }
 
 
     //Для запуска анимации при входе меням visible
@@ -104,7 +95,7 @@ fun Settings(
             .padding(top = 28.dp)
             .background(Color.Black.copy(alpha = 0.4f))
             .clickable(
-                interactionSource = interactionSource,
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = { visible = false }
             ),
@@ -121,7 +112,7 @@ fun Settings(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .clickable(
-                        interactionSource = interactionSource,
+                        interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = {} // Пустой обработчик для блокировки кликов по поверхности
                     ),
@@ -133,11 +124,14 @@ fun Settings(
                 ) {
 
                     Title { visible = false }
+
                     SearchField(
                         searchText = searchText,
                         onValueChange = {
                             searchText = it
-                            applyButtonIsEnabled = true
+                            applyButtonIsEnabled = applyButtonIsEnabled.copy(
+                                changedName = true
+                            )
                         },
                         interactionSource = interactionSource
                     )
@@ -147,30 +141,46 @@ fun Settings(
                         text = stringResource(R.string.sort_by),
                         style = Bold_16
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    FilterRow(
-                        filterParams = filterParams,
-                        onFilterChange = {
-                            filterParams = it
-                            applyButtonIsEnabled = true
-                        }
-                    )
+                    Row {
+                        FilterChip(
+                            text = stringResource(R.string.by_data),
+                            selected = sortByDateTemp,
+                            onSelect = {
+                                applyButtonIsEnabled =
+                                    applyButtonIsEnabled.copy(sortByDate = !applyButtonIsEnabled.sortByDate)
+                                sortByDateTemp = it
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        FilterChip(
+                            text = stringResource(R.string.best_match),
+                            selected = bestMatchTemp,
+                            onSelect = {
+                                applyButtonIsEnabled =
+                                    applyButtonIsEnabled.copy(bestMatch =  !applyButtonIsEnabled.bestMatch)
+                                bestMatchTemp = it
+                            }
+                        )
+                    }
                     ApplyButton(
                         enabled = applyButtonIsEnabled,
-                        onClick = {
-                            searchViewModel.saveSearchSettings(
-                                searchText,
-                                filterParams.sortByDate,
-                                filterParams.bestMatch
-                            )
-                        }
+                        searchText = searchText,
+                        sortByDateTemp = sortByDateTemp,
+                        bestMatchTemp = bestMatchTemp,
+                        searchViewModel = searchViewModel,
+                        onDismiss = onDismiss
                     )
                 }
             }
         }
     }
+
+
 }
+
 
 @Composable
 fun Title(onExitClick: () -> Unit) {
@@ -270,54 +280,34 @@ private fun FilterChip(
 }
 
 @Composable
-private fun FilterRow(
-    filterParams: SearchFilterParams,
-    onFilterChange: (SearchFilterParams) -> Unit
-) {
-    Row {
-        FilterChip(
-            text = stringResource(R.string.by_data),
-            selected = filterParams.sortByDate,
-            onSelect = { selected ->
-                onFilterChange(filterParams.copy(sortByDate = selected))
-            }
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        FilterChip(
-            text = stringResource(R.string.best_match),
-            selected = filterParams.bestMatch,
-            onSelect = { selected ->
-                onFilterChange(filterParams.copy(bestMatch = selected))
-            }
-        )
-    }
-}
-
-@Composable
 private fun ApplyButton(
-    enabled: Boolean,
-    onClick: () -> Unit
+    enabled: SearchSettings,
+    searchText: String,
+    sortByDateTemp: Boolean,
+    bestMatchTemp: Boolean,
+    searchViewModel: SearchScreenViewModel,
+    onDismiss: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 30.dp, bottom = 22.dp)
             .clickable(
-                interactionSource = interactionSource,
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                enabled = enabled
             ) {
-                if (enabled) onClick()
+                searchViewModel.saveSearchSettings(searchText, sortByDateTemp, bestMatchTemp)
+                onDismiss()
             }
     ) {
+
         Text(
             text = stringResource(R.string.apply),
-            style = if (enabled) Regular_16.copy(color = White) else Regular_16,
+            style = if (enabled.isEnabled()) Regular_16.copy(color = White) else Regular_16,
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = if (enabled) Blue else Rose,
+                    color = if (enabled.isEnabled()) Blue else Rose,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 24.dp, vertical = 10.dp)
