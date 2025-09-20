@@ -14,4 +14,5 @@ sealed class Screens () {
 
     @Serializable
     data object SettingsScreen: Screens()
+
 }

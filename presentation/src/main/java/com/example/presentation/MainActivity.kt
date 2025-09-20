@@ -50,6 +50,8 @@ fun HideSystemBars() {
         insetsController.apply {
             hide(WindowInsetsCompat.Type.navigationBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            // Устанавливаем черные индикаторы статус бара
+            isAppearanceLightStatusBars = true
         }
 
         onDispose {
