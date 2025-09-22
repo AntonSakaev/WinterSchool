@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,15 +33,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.domain.remote.models.Items
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.ArrowBack
+
 import com.example.presentation.screens.components.icons.Favorite
+import com.example.presentation.screens.components.items.ProgressIndicator
+import com.example.presentation.screens.components.screens.ErrorScreen
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.LightGray
@@ -49,11 +56,14 @@ import com.example.presentation.theme.Regular_16
 import com.example.presentation.theme.Rose
 
 @OptIn(ExperimentalGlideComposeApi::class)
-@Preview
 @Composable
 fun DetailScreen(
     //  innerPaddingValues: PaddingValues
+    bookId: String
 ) {
+    val detailScreenViewModel: DetailScreenViewModel = hiltViewModel()
+    val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
+
     var isFavorite by remember { mutableStateOf(false) }
     var isPressed by remember { mutableStateOf(false) }
     val pressScale by animateFloatAsState(
@@ -72,6 +82,10 @@ fun DetailScreen(
         }
     )
 
+    LaunchedEffect(true) {
+        detailScreenViewModel.getSelectedBook(bookId)
+    }
+
     Column(
         Modifier
             .padding(/*innerPaddingValues*/)
@@ -86,7 +100,7 @@ fun DetailScreen(
                 .height(48.dp)
         ) {
             Icon(
-                imageVector = Icons.ArrowBack,
+                imageVector = Icons.Default.PlayArrow,
                 contentDescription = stringResource(R.string.back),
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -100,7 +114,8 @@ fun DetailScreen(
                 shape = CircleShape,
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
+            )
+            {
                 Box(modifier = Modifier.fillMaxSize())
                 {
                     Icon(
@@ -123,56 +138,85 @@ fun DetailScreen(
                 }
             }
         }
-        GlideImage(
-            model = null,
-            contentDescription = stringResource(R.string.book_image),
-            modifier = Modifier
-                .height(300.dp)
-                .width(200.dp)
-                .padding(top = 8.dp)
-                .clip(shape = RoundedCornerShape(24.dp))
-                .background(Color.Green)
+        when {
+            state.isLoading -> {
+                ProgressIndicator()
+            }
 
-        )
-        Text(
-            text = "Author Name",
-            modifier = Modifier.padding(top = 14.dp),
-            style = Regular_16.copy(color = Gray),
-        )
-        Text(
-            text = "Book Name",
-            modifier = Modifier.padding(top = 8.dp),
-            style = Bold_16,
-        )
-        Text(
-            text = "Date",
-            modifier = Modifier.padding(top = 8.dp),
-            style = Regular_14.copy(color = Gray)
-        )
-        Box(
-            modifier = Modifier.fillMaxSize().padding(top = 22.dp)
-                .clip(
-                    shape = RoundedCornerShape(
-                        topStart = 32.dp,
-                        topEnd = 32.dp
-                    )
-                )
-                .background(Rose)
-
-        ) {
-            Column (modifier = Modifier.padding(horizontal = 20.dp)){
-                Text(
-                    modifier = Modifier.padding(top = 26.dp),
-                    text = stringResource(R.string.description),
-                    style = Bold_16
-                )
-                Text(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = "Full Description",
-                    style = Regular_14,
-                    lineHeight = 20.sp
+            state.errorMessage != null -> {
+                ErrorScreen(
+                    onClick = { detailScreenViewModel.getSelectedBook(bookId) }
                 )
             }
+
+            else -> {
+                BookInfo(state.selectedBook)
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun BookInfo(selectedBook: Items?) {
+    val bookInfo = selectedBook?.volumeInfo
+    GlideImage(
+        model = bookInfo?.imageLinks?.thumbnail,
+        contentDescription = stringResource(R.string.book_image),
+        modifier = Modifier
+            .height(300.dp)
+            .width(200.dp)
+            .padding(top = 8.dp)
+            .clip(shape = RoundedCornerShape(24.dp)),
+        contentScale = ContentScale.FillBounds
+
+
+    )
+    Text(
+        text = bookInfo?.authors?.joinToString() ?: "",
+        modifier = Modifier
+            .padding(top = 14.dp)
+            .padding(horizontal = 24.dp),
+        style = Regular_16.copy(color = Gray),
+    )
+    Text(
+        text = bookInfo?.title ?: "",
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .padding(horizontal = 24.dp),
+        style = Bold_16,
+    )
+    Text(
+        text = bookInfo?.publishedDate ?: "",
+        modifier = Modifier.padding(top = 8.dp),
+        style = Regular_14.copy(color = Gray)
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 22.dp)
+            .clip(
+                shape = RoundedCornerShape(
+                    topStart = 32.dp,
+                    topEnd = 32.dp
+                )
+            )
+            .background(Rose)
+
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+            Text(
+                modifier = Modifier.padding(top = 26.dp),
+                text = stringResource(R.string.description),
+                style = Bold_16
+            )
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = bookInfo?.description ?: "",
+                style = Regular_14,
+                lineHeight = 20.sp
+            )
         }
     }
 }

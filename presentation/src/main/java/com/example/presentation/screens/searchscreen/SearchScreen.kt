@@ -1,5 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.domain.local.prefs.models.SearchSettings
+import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.theme.Blue
@@ -42,7 +44,8 @@ import com.example.presentation.theme.Regular_12
 fun SearchScreen(
     searchViewModel: SearchScreenViewModel,
     innerPaddingValues: PaddingValues,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onDetailClick:(selectedBookID: String)-> Unit
 ) {
     val searchSettings by searchViewModel.searchParams.collectAsState()
    val isSettingsEnabled by remember { derivedStateOf {  searchSettings.isEnabled()} }
@@ -67,7 +70,8 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
         DisplaySettings(searchViewModel, searchSettings)
-        SearchScreenStateActions(searchViewModel)
+        SearchScreenStateActions(searchViewModel, { onDetailClick(it)
+         })
     }
 
 }
@@ -80,7 +84,6 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
         if (searchSettings.authorName != "") {
             item {
                 ActiveSettings(searchSettings.authorName) {
@@ -88,7 +91,6 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
                 }
             }
         }
-
         if (searchSettings.sortByDate) {
             item {
                 ActiveSettings(stringResource(R.string.sort_by_date)) {

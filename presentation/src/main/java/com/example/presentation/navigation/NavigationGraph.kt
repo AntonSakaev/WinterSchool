@@ -1,11 +1,14 @@
 package com.example.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.example.presentation.screens.booksscreen.DetailScreen
 import com.example.presentation.screens.searchscreen.SearchScreen
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 import com.example.presentation.screens.searchscreen.Settings
@@ -25,7 +28,8 @@ fun NavigationGraph(
             SearchScreen(
                 searchViewModel = searchViewModel,
                 innerPaddingValues = innerPadding,
-                onSettingsClick = {navigationAction.toSettingsScreen()}
+                onSettingsClick = { navigationAction.toSettingsScreen() },
+                onDetailClick = { navigationAction.toDetailScreen(it) }
             )
         }
 
@@ -33,7 +37,9 @@ fun NavigationGraph(
 
         }
 
-        composable<Screens.DetailScreen> {
+        composable<Screens.DetailScreen> { backStackEntry ->
+            val bookId = backStackEntry.toRoute<Screens.DetailScreen>().selectedBookId
+            DetailScreen(bookId)
 
         }
 

@@ -6,7 +6,4 @@ data class Items(
     var etag: String? = null,
     var selfLink: String? = null,
     var volumeInfo: VolumeInfo? = null,
-    // var saleInfo   : SaleInfo?   = SaleInfo(),
-    // var accessInfo : AccessInfo? = AccessInfo(),
-    //  var searchInfo : SearchInfo? = SearchInfo()
 )

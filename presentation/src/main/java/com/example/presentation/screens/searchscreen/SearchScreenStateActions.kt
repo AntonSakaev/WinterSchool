@@ -10,12 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.screens.components.items.ProgressIndicator
 import com.example.presentation.screens.components.screens.ErrorScreen
 
 @Composable
-fun SearchScreenStateActions(searchViewModel: SearchScreenViewModel) {
+fun SearchScreenStateActions(
+    searchViewModel: SearchScreenViewModel,
+    onDetailClick:(selectedBbookID: String)-> Unit
+) {
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -24,7 +28,8 @@ fun SearchScreenStateActions(searchViewModel: SearchScreenViewModel) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(R.string.Enter_the_title_of_the_book_you_are_looking_for))
+                    text = stringResource(R.string.Enter_the_title_of_the_book_you_are_looking_for)
+                )
             }
         }
 
@@ -34,13 +39,13 @@ fun SearchScreenStateActions(searchViewModel: SearchScreenViewModel) {
         }
 
         state.errorMessage != null -> {
-            ErrorScreen (
+            ErrorScreen(
                 onClick = searchViewModel::refresh
-                )
+            )
         }
 
         else -> {
-            SearchScreenSuccess(state.postBooks)
+            SearchScreenSuccess(state.postBooks, onDetailClick = { onDetailClick(it) })
         }
     }
 }

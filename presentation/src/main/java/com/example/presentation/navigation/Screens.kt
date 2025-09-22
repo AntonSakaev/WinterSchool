@@ -10,7 +10,7 @@ sealed class Screens () {
     data object FavoriteScreen: Screens()
 
     @Serializable
-    data class DetailScreen (val bookId: Int) :Screens()
+    data class DetailScreen (val selectedBookId: String) :Screens()
 
     @Serializable
     data object SettingsScreen: Screens()

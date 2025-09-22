@@ -10,7 +10,4 @@ data class ItemsEntity (
     @Json(name = "etag") var etag: String? = null,
     @Json(name = "selfLink") var selfLink: String? = null,
     @Json(name = "volumeInfo") var volumeInfo: VolumeInfoEntity? = null,
-    // @Json("saleInfo"   ) var saleInfo   : SaleInfo?   = SaleInfo(),
-    // @Json("accessInfo" ) var accessInfo : AccessInfo? = AccessInfo(),
-    // @Json("searchInfo" ) var searchInfo : SearchInfo? = SearchInfo()
 )

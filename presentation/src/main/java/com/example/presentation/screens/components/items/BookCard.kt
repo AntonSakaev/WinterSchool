@@ -46,7 +46,6 @@ fun BookCard(
     volume: VolumeInfo?,
     onFavoriteClick: () -> Unit,
     onImageClick: () -> Unit
-
 ) {
     var isFavorite by remember { mutableStateOf(false) }
     var isPressed by remember { mutableStateOf(false) }

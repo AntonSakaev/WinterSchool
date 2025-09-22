@@ -18,7 +18,8 @@ import com.example.presentation.screens.components.items.BookCard
 
 @Composable
 fun SearchScreenSuccess(
-    booksInfo: Books?
+    booksInfo: Books?,
+    onDetailClick:(selectedBookID: String) -> Unit
 ) {
     val context = LocalContext.current
     val books by rememberSaveable { mutableStateOf((booksInfo?.items)) }
@@ -38,7 +39,7 @@ fun SearchScreenSuccess(
             BookCard(
                 volume,
                 onFavoriteClick = { Toast.makeText(context, "SDFSDFD", Toast.LENGTH_SHORT).show() },
-                onImageClick = { Toast.makeText(context, "TTTTT", Toast.LENGTH_SHORT).show() }
+                onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?:"")}
             )
 
         }

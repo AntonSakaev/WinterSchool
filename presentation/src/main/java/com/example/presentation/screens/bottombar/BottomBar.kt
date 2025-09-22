@@ -34,7 +34,6 @@ import com.example.presentation.screens.components.icons.Search
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Blue
 
-
 @Composable
 fun BottomBar(
     navController: NavHostController
