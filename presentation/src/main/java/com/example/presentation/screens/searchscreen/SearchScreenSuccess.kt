@@ -13,17 +13,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.remote.models.Books
 import com.example.presentation.screens.components.items.BookCard
 
 @Composable
 fun SearchScreenSuccess(
-    booksInfo: Books?,
+    searchViewModel: SearchScreenViewModel,
+
     onDetailClick:(selectedBookID: String) -> Unit
 ) {
-    val context = LocalContext.current
-    val books by rememberSaveable { mutableStateOf((booksInfo?.items)) }
+
+    val state by searchViewModel.uiState.collectAsStateWithLifecycle()
+
+    val books by rememberSaveable { mutableStateOf((state.postBooks?.items)) }
     val keys = remember(books) { books?.map { it.id } }
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
@@ -34,14 +39,14 @@ fun SearchScreenSuccess(
             count = books?.size ?: 0,
             key = { index -> keys?.get(index) ?: 0 })
         { booksIndex ->
-            val volume = books?.get(booksIndex)?.volumeInfo
-
-            BookCard(
-                volume,
-                onFavoriteClick = { Toast.makeText(context, "SDFSDFD", Toast.LENGTH_SHORT).show() },
-                onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?:"")}
-            )
-
+            val item = books?.get(booksIndex)
+if (item!=null) {
+    BookCard(
+        item,
+        searchViewModel,
+        onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") }
+    )
+}
         }
     }
 }

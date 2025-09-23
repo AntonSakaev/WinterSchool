@@ -2,6 +2,10 @@ package com.example.presentation.screens.searchscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.local.db.Favorite
+import com.example.domain.local.db.usecases.AddFavoriteUseCase
+import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
+import com.example.domain.local.db.usecases.IsFavoriteUseCase
 import com.example.domain.local.prefs.models.SearchSettings
 import com.example.domain.remote.models.Books
 import com.example.domain.local.prefs.usecases.GetSearchSettings
@@ -24,6 +28,9 @@ class SearchScreenViewModel @Inject constructor(
     private val getBooksInfoUseCase: GetBooksInfoUseCase,
     private val saveSearchSettingsUseCase: SaveSearchSettings,
     private val getSearchSettingsUseCase: GetSearchSettings,
+    private val addFavoriteUseCase: AddFavoriteUseCase,
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    private val isFavoriteUseCase: IsFavoriteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchScreenState())
@@ -46,6 +53,54 @@ class SearchScreenViewModel @Inject constructor(
                 launchSearch(keyword)
             }
         }
+    }
+
+    private val _favorites = MutableStateFlow<List<Favorite>>(emptyList())
+    val favorites = _favorites.asStateFlow()
+
+    private val _isFavorite = MutableStateFlow<Boolean?>(null)
+    val isFavorite = _isFavorite.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
+
+    fun addFavorite(favorite: String?, thumbnail: String?, authors: List<String>, title: String?) {
+        viewModelScope.launch {
+            try {
+                addFavoriteUseCase(favorite)
+                 _error.value = null
+            } catch (e: Exception) {
+                _error.value = "Ошибка добавления в избранное: ${e.message}"
+            }
+        }
+    }
+
+    fun deleteFavorite(bookId: String) {
+        viewModelScope.launch {
+            try {
+                deleteFavoriteUseCase(bookId)
+
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = "Ошибка удаления из избранного: ${e.message}"
+            }
+        }
+    }
+
+    fun checkIsFavorite(bookId: String) {
+        viewModelScope.launch {
+            try {
+                _isFavorite.value = isFavoriteUseCase(bookId)
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = "Ошибка проверки избранного: ${e.message}"
+            }
+        }
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 
     fun saveSearchSettings(
@@ -135,6 +190,7 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(postBooks: Books) {
+
         _uiState.update { state ->
             state.copy(
                 isLoading = false,

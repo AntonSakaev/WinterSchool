@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.presentation.screens.booksscreen.DetailScreen
+import com.example.presentation.screens.booksscreen.DetailScreenViewModel
 import com.example.presentation.screens.searchscreen.SearchScreen
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 import com.example.presentation.screens.searchscreen.Settings
@@ -20,6 +21,7 @@ fun NavigationGraph(
 ) {
 
     val searchViewModel: SearchScreenViewModel = hiltViewModel()
+    val detailScreenViewModel: DetailScreenViewModel = hiltViewModel()
     val navigationAction = NavigationAction(navController)
 
     NavHost(navController, startDestination = Screens.SearchScreen) {
@@ -39,7 +41,12 @@ fun NavigationGraph(
 
         composable<Screens.DetailScreen> { backStackEntry ->
             val bookId = backStackEntry.toRoute<Screens.DetailScreen>().selectedBookId
-            DetailScreen(bookId)
+            DetailScreen(
+                innerPaddingValues = innerPadding,
+                bookId = bookId,
+                detailScreenViewModel = detailScreenViewModel,
+                onExitClick = { navigationAction.backClick() }
+            )
 
         }
 

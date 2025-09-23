@@ -22,4 +22,8 @@ class NavigationAction(private val navController: NavController) {
             route = Screens.DetailScreen(selectedBookId)
         )
     }
+
+    fun backClick(){
+        navController.popBackStack()
+    }
 }

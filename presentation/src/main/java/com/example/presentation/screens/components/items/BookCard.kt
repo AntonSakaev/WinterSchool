@@ -1,5 +1,7 @@
 package com.example.presentation.screens.components.items
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -20,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,25 +34,30 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.domain.remote.models.VolumeInfo
+import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Favorite
+import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    volume: VolumeInfo?,
-    onFavoriteClick: () -> Unit,
+    currentBook: Items,
+    searchViewModel: SearchScreenViewModel,
+   // onFavoriteClick: () -> Unit,
     onImageClick: () -> Unit
 ) {
-    var isFavorite by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+  //  var isFavorite by remember { mutableStateOf(false) }
     var isPressed by remember { mutableStateOf(false) }
+    val isFavorite by  searchViewModel.isFavorite.collectAsState()
 
     // Анимация при нажатии
     val pressScale by animateFloatAsState(
@@ -62,10 +71,17 @@ fun BookCard(
                 1.1f at 550
                 1.0f at 700
             }
-        } else {
+        } else
+        {
             tween(durationMillis = 0)
         }
     )
+
+    LaunchedEffect(isPressed) {
+        searchViewModel.checkIsFavorite(currentBook.id ?: "")
+        Log.d("TAG", "BookCard: $isFavorite")
+    }
+
 
     Column(
         modifier = Modifier
@@ -80,7 +96,7 @@ fun BookCard(
         Box {
             GlideImage(
                 contentScale = ContentScale.Crop,
-                model = volume?.imageLinks?.thumbnail,
+                model = currentBook.volumeInfo?.imageLinks?.thumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
@@ -108,20 +124,35 @@ fun BookCard(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
-                                isFavorite = !isFavorite
+                                if (isFavorite == true) {
+                                    searchViewModel.deleteFavorite(currentBook.id ?: "")
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.book_delete_sucsess),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    searchViewModel.addFavorite(currentBook.id, currentBook.volumeInfo.imageLinks.thumbnail, currentBook.volumeInfo.authors, currentBook.volumeInfo.title)
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.add_book_sucsess),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                                 isPressed = !isPressed
-                                onFavoriteClick()
                             },
-                        tint = if (isFavorite) Red else LightGray
+                        tint = if (isFavorite == true) Red else LightGray
                     )
                 }
             }
         }
-        (if (volume?.authors?.isNotEmpty() == true)
-            volume.authors.first()
+        (
+                if (currentBook.volumeInfo?.authors?.isNotEmpty() == true)
+            currentBook.volumeInfo?.authors?.first()
         else stringResource(
             R.string.no_authors
-        )).let { Text(text = it, color = Color.Gray) }
-        Text(text = volume?.title ?: "")
+        )
+                ).let { Text(text = it ?:"", color = Color.Gray) }
+        Text(text = currentBook.volumeInfo?.title ?: "")
     }
 }

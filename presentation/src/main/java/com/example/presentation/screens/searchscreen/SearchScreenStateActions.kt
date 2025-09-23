@@ -45,7 +45,7 @@ fun SearchScreenStateActions(
         }
 
         else -> {
-            SearchScreenSuccess(state.postBooks, onDetailClick = { onDetailClick(it) })
+            SearchScreenSuccess(searchViewModel, onDetailClick = { onDetailClick(it) })
         }
     }
 }

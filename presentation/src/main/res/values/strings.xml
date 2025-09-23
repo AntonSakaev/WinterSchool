@@ -21,4 +21,6 @@
     <string name="back">Назад</string>
     <string name="book_image">Обложка</string>
     <string name="description">Описание</string>
+    <string name="book_delete_sucsess">Книга успешно удалена из избранного</string>
+    <string name="add_book_sucsess">Книга успешно добавлена в избранное</string>
 </resources>

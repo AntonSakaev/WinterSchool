@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,13 +38,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
-
 import com.example.presentation.screens.components.icons.Favorite
 import com.example.presentation.screens.components.items.ProgressIndicator
 import com.example.presentation.screens.components.screens.ErrorScreen
@@ -58,14 +57,17 @@ import com.example.presentation.theme.Rose
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailScreen(
-    //  innerPaddingValues: PaddingValues
-    bookId: String
+    innerPaddingValues: PaddingValues,
+    bookId: String,
+    detailScreenViewModel: DetailScreenViewModel,
+    onExitClick: () -> Unit
 ) {
-    val detailScreenViewModel: DetailScreenViewModel = hiltViewModel()
+
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
 
     var isFavorite by remember { mutableStateOf(false) }
     var isPressed by remember { mutableStateOf(false) }
+
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,
         animationSpec = if (isPressed) {
@@ -82,13 +84,13 @@ fun DetailScreen(
         }
     )
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         detailScreenViewModel.getSelectedBook(bookId)
     }
 
     Column(
         Modifier
-            .padding(/*innerPaddingValues*/)
+            .padding(innerPaddingValues)
             .padding(top = 28.dp),
 
         horizontalAlignment = Alignment.CenterHorizontally
@@ -105,7 +107,7 @@ fun DetailScreen(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .clickable {
-                        /*       onExitClick()*/
+                        onExitClick()
                     })
             Card(
                 modifier = Modifier
@@ -145,7 +147,10 @@ fun DetailScreen(
 
             state.errorMessage != null -> {
                 ErrorScreen(
-                    onClick = { detailScreenViewModel.getSelectedBook(bookId) }
+                    onClick = {
+                        detailScreenViewModel.refresh()
+                        detailScreenViewModel.getSelectedBook(bookId)
+                    }
                 )
             }
 
