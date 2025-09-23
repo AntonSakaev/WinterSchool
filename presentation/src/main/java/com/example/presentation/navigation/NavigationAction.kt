@@ -1,7 +1,6 @@
 package com.example.presentation.navigation
 
 import androidx.navigation.NavController
-import com.example.domain.remote.models.Items
 
 class NavigationAction(private val navController: NavController) {
 
