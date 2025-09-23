@@ -42,43 +42,43 @@ class DetailScreenViewModel @Inject constructor(
     private val _isFavorite = MutableStateFlow<Boolean?>(null)
     val isFavorite: StateFlow<Boolean?> = _isFavorite.asStateFlow()
 
-    fun checkIsFavorite(bookId: String) {
-        viewModelScope.launch {
-            try {
-                _isFavorite.value = isFavoriteUseCase(bookId)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка проверки избранного: ${e.message}"
-            }
-        }
-    }
+//    fun checkIsFavorite(bookId: String) {
+//        viewModelScope.launch {
+//            try {
+//                _isFavorite.value = isFavoriteUseCase(bookId)
+//                _error.value = null
+//            } catch (e: Exception) {
+//                _error.value = "Ошибка проверки избранного: ${e.message}"
+//            }
+//        }
+//    }
 
     fun clearError() {
         _error.value = null
     }
 
 
-    fun deleteFavorite(bookId: String) {
-        viewModelScope.launch {
-            try {
-                deleteFavoriteUseCase(bookId)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка удаления из избранного: ${e.message}"
-            }
-        }
-    }
+//    fun deleteFavorite(bookId: String) {
+//        viewModelScope.launch {
+//            try {
+//                deleteFavoriteUseCase(bookId)
+//                _error.value = null
+//            } catch (e: Exception) {
+//                _error.value = "Ошибка удаления из избранного: ${e.message}"
+//            }
+//        }
+//    }
 
-    fun addFavorite(favorite: Favorite) {
-        viewModelScope.launch {
-            try {
-                addFavoriteUseCase(favorite)
-                  _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка добавления в избранное: ${e.message}"
-            }
-        }
-    }
+//    fun addFavorite(favorite: Favorite) {
+//        viewModelScope.launch {
+//            try {
+//                addFavoriteUseCase(favorite)
+//                  _error.value = null
+//            } catch (e: Exception) {
+//                _error.value = "Ошибка добавления в избранное: ${e.message}"
+//            }
+//        }
+//    }
 
     fun getSelectedBook(keyword: String) {
         if (!isInitialized) {

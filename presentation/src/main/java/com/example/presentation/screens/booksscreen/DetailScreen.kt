@@ -43,6 +43,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
+import com.example.presentation.screens.components.icons.ArrowBack
 import com.example.presentation.screens.components.icons.Favorite
 import com.example.presentation.screens.components.items.ProgressIndicator
 import com.example.presentation.screens.components.screens.ErrorScreen
@@ -102,7 +103,7 @@ fun DetailScreen(
                 .height(48.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = Icons.ArrowBack,
                 contentDescription = stringResource(R.string.back),
                 modifier = Modifier
                     .align(Alignment.CenterStart)

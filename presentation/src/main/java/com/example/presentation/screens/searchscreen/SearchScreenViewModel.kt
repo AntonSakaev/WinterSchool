@@ -65,37 +65,50 @@ class SearchScreenViewModel @Inject constructor(
     val error = _error.asStateFlow()
 
 
-    fun addFavorite(favorite: String?, thumbnail: String?, authors: List<String>, title: String?) {
+    fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
+        val favorite = Favorite(
+            filmId = bookId,
+            imageUrl = thumbnail,
+            authors = authors,
+            bookName = title
+        )
+
         viewModelScope.launch {
-            try {
-                addFavoriteUseCase(favorite)
-                 _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка добавления в избранное: ${e.message}"
-            }
+            addFavoriteUseCase(favorite).handle(
+                onSuccess = {
+                    _error.value = null
+                },
+                onError = { message ->
+                    _error.value = "Ошибка добавления в избранное: $message"
+                }
+            )
         }
     }
 
     fun deleteFavorite(bookId: String) {
         viewModelScope.launch {
-            try {
-                deleteFavoriteUseCase(bookId)
-
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка удаления из избранного: ${e.message}"
-            }
+            deleteFavoriteUseCase(bookId).handle(
+                onSuccess = {
+                    _error.value = null
+                },
+                onError = { message ->
+                    _error.value = "Ошибка удаления из избранного: $message"
+                }
+            )
         }
     }
 
     fun checkIsFavorite(bookId: String) {
         viewModelScope.launch {
-            try {
-                _isFavorite.value = isFavoriteUseCase(bookId)
-                _error.value = null
-            } catch (e: Exception) {
-                _error.value = "Ошибка проверки избранного: ${e.message}"
-            }
+            isFavoriteUseCase(bookId).handle(
+                onSuccess = { isFavorite ->
+                    _isFavorite.value = isFavorite
+                },
+                onError = { message ->
+                    _error.value = "Ошибка проверки избранного: $message"
+                    _isFavorite.value = null
+                }
+            )
         }
     }
 
@@ -200,7 +213,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    private fun emptyKeyword() {
+        private fun emptyKeyword() {
         _uiState.update { state ->
             state.copy(
                 isNoKeyWord = true,

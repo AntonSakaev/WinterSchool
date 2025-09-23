@@ -132,7 +132,12 @@ fun BookCard(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
-                                    searchViewModel.addFavorite(currentBook.id, currentBook.volumeInfo.imageLinks.thumbnail, currentBook.volumeInfo.authors, currentBook.volumeInfo.title)
+                                    searchViewModel.addFavorite(
+                                        bookId = currentBook.id ?: "",
+                                        thumbnail = currentBook.volumeInfo?.imageLinks?.thumbnail ?: "",
+                                        authors = currentBook.volumeInfo?.authors?.joinToString() ?: "",
+                                        title = currentBook.volumeInfo?.title ?: ""
+                                    )
                                     Toast.makeText(
                                         context,
                                         context.getString(R.string.add_book_sucsess),
