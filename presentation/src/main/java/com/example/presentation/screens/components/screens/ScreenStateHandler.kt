@@ -1,30 +1,33 @@
-package com.example.presentation.screens.searchscreen
+package com.example.presentation.screens.components.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.screens.components.items.ProgressIndicator
-import com.example.presentation.screens.components.screens.ErrorScreen
-import com.example.presentation.screens.components.screens.ScreenStateHandler
+
+// Интерфейс для общего состояния экрана
+interface ScreenState {
+    val isLoading: Boolean
+    val errorMessage: String?
+}
 
 @Composable
-fun SearchScreenStateActions(
-    searchViewModel: SearchScreenViewModel,
-    onDetailClick:(selectedBbookID: String)-> Unit
+fun <T : ScreenState> ScreenStateHandler(
+    state: T,
+    isNoKeyWord: Boolean = false,
+    onRefresh: () -> Unit,
+    successContent: @Composable (T) -> Unit
 ) {
-    val state by searchViewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     when {
-        state.isNoKeyWord -> {
+        isNoKeyWord -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -34,18 +37,18 @@ fun SearchScreenStateActions(
         }
 
         state.isLoading -> {
-            keyboardController?.hide() // Скрываем клавиатуру
+            keyboardController?.hide()
             ProgressIndicator()
         }
 
         state.errorMessage != null -> {
             ErrorScreen(
-                onClick = searchViewModel::refresh
+                onClick = onRefresh
             )
         }
 
         else -> {
-            SearchScreenSuccess(searchViewModel, onDetailClick = { onDetailClick(it) })
+            successContent(state)
         }
     }
 }
