@@ -47,7 +47,6 @@ import com.example.presentation.screens.components.icons.ArrowBack
 import com.example.presentation.screens.components.icons.Favorite
 import com.example.presentation.screens.components.items.ProgressIndicator
 import com.example.presentation.screens.components.screens.ErrorScreen
-import com.example.presentation.screens.components.screens.ScreenStateHandler
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.LightGray
@@ -142,16 +141,24 @@ fun DetailScreen(
                 }
             }
         }
-        ScreenStateHandler(
-            state = state,
-            onRefresh = {
-                detailScreenViewModel.refresh()
-                detailScreenViewModel.getSelectedBook(bookId)
-            },
-            successContent = { detailState ->
-                BookInfo(detailState.selectedBook)
+        when {
+            state.isLoading -> {
+                ProgressIndicator()
             }
-        )
+
+            state.errorMessage != null -> {
+                ErrorScreen(
+                    onClick = {
+                        detailScreenViewModel.refresh()
+                        detailScreenViewModel.getSelectedBook(bookId)
+                    }
+                )
+            }
+
+            else -> {
+                BookInfo(state.selectedBook)
+            }
+        }
     }
 }
 

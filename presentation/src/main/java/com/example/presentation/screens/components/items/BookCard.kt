@@ -1,7 +1,9 @@
 package com.example.presentation.screens.components.items
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -55,9 +57,12 @@ fun BookCard(
     onImageClick: () -> Unit
 ) {
     val context = LocalContext.current
-  //  var isFavorite by remember { mutableStateOf(false) }
     var isPressed by remember { mutableStateOf(false) }
     val isFavorite by  searchViewModel.isFavorite.collectAsState()
+
+    fun Context.showToast(@StringRes messageRes: Int) {
+        Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show()
+    }
 
     // Анимация при нажатии
     val pressScale by animateFloatAsState(
@@ -77,9 +82,10 @@ fun BookCard(
         }
     )
 
-    LaunchedEffect(isPressed) {
+    LaunchedEffect(Unit) {
         searchViewModel.checkIsFavorite(currentBook.id ?: "")
-        Log.d("TAG", "BookCard: $isFavorite")
+        isPressed=isFavorite==true
+
     }
 
 
@@ -124,29 +130,35 @@ fun BookCard(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
-                                if (isFavorite == true) {
+                                if (isPressed) {
                                     searchViewModel.deleteFavorite(currentBook.id ?: "")
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.book_delete_sucsess),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+
+                                    context.showToast(R.string.book_delete_sucsess)
+//                                    Toast.makeText(
+//                                        context,
+//                                        context.getString(R.string.book_delete_sucsess),
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
                                 } else {
                                     searchViewModel.addFavorite(
                                         bookId = currentBook.id ?: "",
-                                        thumbnail = currentBook.volumeInfo?.imageLinks?.thumbnail ?: "",
-                                        authors = currentBook.volumeInfo?.authors?.joinToString() ?: "",
+                                        thumbnail = currentBook.volumeInfo?.imageLinks?.thumbnail
+                                            ?: "",
+                                        authors = currentBook.volumeInfo?.authors?.joinToString()
+                                            ?: "",
                                         title = currentBook.volumeInfo?.title ?: ""
                                     )
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.add_book_sucsess),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    context.showToast(R.string.add_book_sucsess)
+//                                    Toast.makeText(
+//                                        context,
+//                                        context.getString(R.string.add_book_sucsess),
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
                                 }
                                 isPressed = !isPressed
+
                             },
-                        tint = if (isFavorite == true) Red else LightGray
+                        tint = if (isPressed) Red else LightGray
                     )
                 }
             }
@@ -160,4 +172,6 @@ fun BookCard(
                 ).let { Text(text = it ?:"", color = Color.Gray) }
         Text(text = currentBook.volumeInfo?.title ?: "")
     }
+
+
 }

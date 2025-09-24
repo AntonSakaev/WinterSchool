@@ -13,7 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.screens.components.items.ProgressIndicator
 import com.example.presentation.screens.components.screens.ErrorScreen
-import com.example.presentation.screens.components.screens.ScreenStateHandler
+
 
 @Composable
 fun SearchScreenStateActions(
