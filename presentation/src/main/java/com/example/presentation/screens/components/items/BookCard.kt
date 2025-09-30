@@ -53,12 +53,13 @@ import com.example.presentation.theme.Red
 fun BookCard(
     currentBook: Items,
     searchViewModel: SearchScreenViewModel,
-   // onFavoriteClick: () -> Unit,
+    // onFavoriteClick: () -> Unit,
     onImageClick: () -> Unit
 ) {
     val context = LocalContext.current
     var isPressed by remember { mutableStateOf(false) }
-    val isFavorite by  searchViewModel.isFavorite.collectAsState()
+    val isFavorite by searchViewModel.isFavorite.collectAsState()
+    val currentBookInfo = currentBook.volumeInfo
 
     fun Context.showToast(@StringRes messageRes: Int) {
         Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show()
@@ -76,16 +77,16 @@ fun BookCard(
                 1.1f at 550
                 1.0f at 700
             }
-        } else
-        {
+        } else {
             tween(durationMillis = 0)
         }
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentBook.id) {
         searchViewModel.checkIsFavorite(currentBook.id ?: "")
-        isPressed=isFavorite==true
-
+        isPressed = isFavorite == true
+        Log.d("isFavorite", "BookCard: $isFavorite")
+        Log.d("isPressed", "BookCard: $isPressed")
     }
 
 
@@ -102,7 +103,7 @@ fun BookCard(
         Box {
             GlideImage(
                 contentScale = ContentScale.Crop,
-                model = currentBook.volumeInfo?.imageLinks?.thumbnail,
+                model = currentBookInfo?.imageLinks?.thumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
@@ -134,26 +135,18 @@ fun BookCard(
                                     searchViewModel.deleteFavorite(currentBook.id ?: "")
 
                                     context.showToast(R.string.book_delete_sucsess)
-//                                    Toast.makeText(
-//                                        context,
-//                                        context.getString(R.string.book_delete_sucsess),
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
+
                                 } else {
                                     searchViewModel.addFavorite(
                                         bookId = currentBook.id ?: "",
-                                        thumbnail = currentBook.volumeInfo?.imageLinks?.thumbnail
+                                        thumbnail = currentBookInfo?.imageLinks?.thumbnail
                                             ?: "",
-                                        authors = currentBook.volumeInfo?.authors?.joinToString()
+                                        authors = currentBookInfo?.authors?.joinToString()
                                             ?: "",
-                                        title = currentBook.volumeInfo?.title ?: ""
+                                        title = currentBookInfo?.title ?: ""
                                     )
                                     context.showToast(R.string.add_book_sucsess)
-//                                    Toast.makeText(
-//                                        context,
-//                                        context.getString(R.string.add_book_sucsess),
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
+
                                 }
                                 isPressed = !isPressed
 
@@ -164,12 +157,12 @@ fun BookCard(
             }
         }
         (
-                if (currentBook.volumeInfo?.authors?.isNotEmpty() == true)
-            currentBook.volumeInfo?.authors?.first()
-        else stringResource(
-            R.string.no_authors
-        )
-                ).let { Text(text = it ?:"", color = Color.Gray) }
+                if (currentBookInfo?.authors?.isNotEmpty() == true)
+                    currentBookInfo.authors.first()
+                else stringResource(
+                    R.string.no_authors
+                )
+                ).let { Text(text = it, color = Color.Gray) }
         Text(text = currentBook.volumeInfo?.title ?: "")
     }
 
