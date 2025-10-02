@@ -11,7 +11,6 @@ class GetSelectedBookUseCase @Inject constructor(
     private val booksRepository: BooksRepository
 ) {
     suspend operator fun invoke(selectedBookId: String): Flow<OperationResult<Items>> {
-        Log.d("TAG", "invoke: ")
         return booksRepository.getSelectedBook(selectedBookId)
     }
 }

@@ -45,6 +45,7 @@ fun SearchScreenStateActions(
         }
 
         else -> {
+
             SearchScreenSuccess(searchViewModel, onDetailClick = { onDetailClick(it) })
         }
     }

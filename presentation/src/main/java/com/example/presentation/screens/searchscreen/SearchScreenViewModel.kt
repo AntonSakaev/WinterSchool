@@ -1,5 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.local.db.Favorite
@@ -11,6 +12,7 @@ import com.example.domain.remote.models.Books
 import com.example.domain.local.prefs.usecases.GetSearchSettings
 import com.example.domain.local.prefs.usecases.SaveSearchSettings
 import com.example.domain.remote.usecases.GetBooksInfoUseCase
+import com.example.presentation.screens.components.items.BookCardState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.presentation.screens.utils.handle
 import kotlinx.coroutines.Dispatchers
@@ -55,10 +57,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    private val _favorites = MutableStateFlow<List<Favorite>>(emptyList())
-    val favorites = _favorites.asStateFlow()
-
-    private val _isFavorite = MutableStateFlow<Boolean?>(null)
+    private val _isFavorite = MutableStateFlow(BookCardState())
     val isFavorite = _isFavorite.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
@@ -72,7 +71,6 @@ class SearchScreenViewModel @Inject constructor(
             authors = authors,
             bookName = title
         )
-
         viewModelScope.launch {
             addFavoriteUseCase(favorite).handle(
                 onSuccess = {
@@ -89,6 +87,7 @@ class SearchScreenViewModel @Inject constructor(
         viewModelScope.launch {
             deleteFavoriteUseCase(bookId).handle(
                 onSuccess = {
+
                     _error.value = null
                 },
                 onError = { message ->
@@ -98,19 +97,96 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    fun checkIsFavorite(bookId: String) {
-        viewModelScope.launch {
-            isFavoriteUseCase(bookId).handle(
-                onSuccess = { isFavorite ->
-                    _isFavorite.value = isFavorite
-                },
-                onError = { message ->
-                    _error.value = "Ошибка проверки избранного: $message"
-                    _isFavorite.value = null
-                }
+    fun checkIsFavorite(bookIds: List<String?>) {
+        Log.d("STARTFUN", "checkIsFavorite: ")
+        _isFavorite.update {
+            it.copy(
+                isLoading = true,
+                favoriteResults = mutableListOf(),
+                errorMessage = null
             )
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            for (bookId in bookIds) {
+                isFavoriteUseCase(bookId ?: "").collect {
+                    it.handle(
+                        onLoading = {
+                            _isFavorite.update { state ->
+                                state.copy(
+                                    isLoading = true
+                                )
+                            }
+                        },
+                        onSuccess = { isFavorit ->
+                            _isFavorite.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    favoriteResults = state.favoriteResults.toMutableList()
+                                        .apply { add(isFavorit) }
+                                )
+                            }
+                            Log.d(
+                                "VIEWMODEL",
+                                "checkIsFavorite: ${isFavorite.value.favoriteResults}"
+                            )
+
+                        },
+                        onError = { message ->
+                            _isFavorite.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    favoriteResults = state.favoriteResults.toMutableList()
+                                        .apply { add(null) },
+                                    errorMessage = "Ошибка для $bookId: $message"
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
+//    fun checkIsFavorite(bookIds: List<String>) {
+//
+//        viewModelScope.launch (Dispatchers.IO){
+//            val results = mutableListOf<Boolean>()
+//            for (bookId in bookIds){
+//            isFavoriteUseCase(bookId)
+//                .collect {
+//                it.handle(
+//                onSuccess = { isFavorit ->
+//
+//                    _isFavorite.update { state ->
+//                        state.copy(
+//                            isLoading = false,
+//                            isFavorite = isFavorit,
+//                            errorMessage = null
+//                        )
+//                    }
+//                },
+//                onLoading = {
+//                    _isFavorite.update { state ->
+//                    state.copy(
+//                        isLoading = true,
+//                        isFavorite = false,
+//                        errorMessage = null
+//                    )
+//
+//                }
+//                            },
+//                onError = { message ->
+//                    _isFavorite.update { state ->
+//                        state.copy(
+//                            isLoading = false,
+//                            isFavorite = null,
+//                            errorMessage = "Ошибка проверки избранного: $message"
+//                        )
+//                    }
+//                }
+//            ) }
+//        }}
+//    }
 
     fun clearError() {
         _error.value = null
@@ -203,7 +279,6 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(postBooks: Books) {
-
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
@@ -211,9 +286,13 @@ class SearchScreenViewModel @Inject constructor(
                 errorMessage = null
             )
         }
+        val listIds = postBooks.items.map { it.id }
+        if (listIds.isNotEmpty()) {
+            checkIsFavorite(listIds)
+        }
     }
 
-        private fun emptyKeyword() {
+    private fun emptyKeyword() {
         _uiState.update { state ->
             state.copy(
                 isNoKeyWord = true,
