@@ -2,7 +2,6 @@ package com.example.presentation.screens.components.items
 
 import android.content.Context
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -56,8 +55,6 @@ fun BookCard(
     onImageClick: () -> Unit
 ) {
 
-    val currentBookInfo = currentBook.volumeInfo
-
     Column(
         modifier = Modifier
             .height(290.dp)
@@ -71,7 +68,7 @@ fun BookCard(
         Box {
             GlideImage(
                 contentScale = ContentScale.Crop,
-                model = currentBookInfo?.imageLinks?.thumbnail,
+                model = currentBook.volumeInfo?.imageLinks?.thumbnail,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
@@ -84,18 +81,18 @@ fun BookCard(
                     .align(Alignment.TopEnd)
             ) {
                 FavoriteIcon(
-                    searchViewModel, currentBook, currentBookInfo, isFavorite
+                    searchViewModel, currentBook, isFavorite
                 )
             }
         }
         (
-                if (currentBookInfo?.authors?.isNotEmpty() == true)
-                    currentBookInfo.authors.first()
+                if (currentBook.volumeInfo?.authors?.isNotEmpty() == true)
+                    currentBook.volumeInfo?.authors?.first()
                 else stringResource(
                     R.string.no_authors
                 )
-                ).let { Text(text = it, color = Color.Gray) }
-        Text(text = currentBookInfo?.title ?: "")
+                ).let { Text(text = it ?:"", color = Color.Gray) }
+        Text(text = currentBook.volumeInfo?.title ?: "")
     }
 }
 
@@ -103,9 +100,9 @@ fun BookCard(
 fun FavoriteIcon(
     searchViewModel: SearchScreenViewModel,
     currentBook: Items,
-    currentBookInfo: VolumeInfo?,
     isFavorite: Boolean
 ) {
+    val currentBookInfo = currentBook.volumeInfo
     var isPressed by remember { mutableStateOf(isFavorite) }
     val context = LocalContext.current
     val isError by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
