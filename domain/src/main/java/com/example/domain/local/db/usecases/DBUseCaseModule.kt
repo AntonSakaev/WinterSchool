@@ -30,7 +30,7 @@ object DBUseCaseModule {
 
     @Provides
     @Singleton
-    fun provideIsFavoriteUseCase(repository: FavoriteRepository): IsFavoriteUseCase {
-        return IsFavoriteUseCase(repository)
+    fun provideIsFavoriteUseCase(repository: FavoriteRepository): CheckIsFavoriteUseCase {
+        return CheckIsFavoriteUseCase(repository)
     }
 }

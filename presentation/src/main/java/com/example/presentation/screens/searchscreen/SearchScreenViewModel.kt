@@ -1,12 +1,11 @@
 package com.example.presentation.screens.searchscreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.local.db.Favorite
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
-import com.example.domain.local.db.usecases.IsFavoriteUseCase
+import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.local.prefs.models.SearchSettings
 import com.example.domain.remote.models.Books
 import com.example.domain.local.prefs.usecases.GetSearchSettings
@@ -32,7 +31,7 @@ class SearchScreenViewModel @Inject constructor(
     private val getSearchSettingsUseCase: GetSearchSettings,
     private val addFavoriteUseCase: AddFavoriteUseCase,
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    private val isFavoriteUseCase: IsFavoriteUseCase
+    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchScreenState())
@@ -57,12 +56,8 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    private val _isFavorite = MutableStateFlow(BookCardState())
-    val isFavorite = _isFavorite.asStateFlow()
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error = _error.asStateFlow()
-
+    private val _dBRequestState = MutableStateFlow(BookCardState())
+    val dBRequestState = _dBRequestState.asStateFlow()
 
     fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
         val favorite = Favorite(
@@ -73,12 +68,8 @@ class SearchScreenViewModel @Inject constructor(
         )
         viewModelScope.launch {
             addFavoriteUseCase(favorite).handle(
-                onSuccess = {
-                    _error.value = null
-                },
-                onError = { message ->
-                    _error.value = "Ошибка добавления в избранное: $message"
-                }
+                onSuccess = { onSuccessRequestToDB() },
+                onError = ::errorRequestToDB
             )
         }
     }
@@ -86,70 +77,77 @@ class SearchScreenViewModel @Inject constructor(
     fun deleteFavorite(bookId: String) {
         viewModelScope.launch {
             deleteFavoriteUseCase(bookId).handle(
-                onSuccess = {
-
-                    _error.value = null
-                },
-                onError = { message ->
-                    _error.value = "Ошибка удаления из избранного: $message"
-                }
+                onSuccess = { onSuccessRequestToDB() },
+                onError = ::errorRequestToDB
             )
         }
     }
 
-    fun checkIsFavorite(bookIds: List<String?>) {
-        _isFavorite.update {
+    fun clearFavorite() {
+        _dBRequestState.update {
             it.copy(
                 isLoading = true,
                 favoriteResults = mutableListOf(),
                 errorMessage = null
             )
         }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            for (bookId in bookIds) {
-                isFavoriteUseCase(bookId ?: "").collect {
-                    it.handle(
-                        onLoading = {
-                            _isFavorite.update { state ->
-                                state.copy(
-                                    isLoading = true
-                                )
-                            }
-                        },
-                        onSuccess = { isFavorit ->
-                            _isFavorite.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    favoriteResults = state.favoriteResults.toMutableList()
-                                        .apply { add(isFavorit) }
-                                )
-                            }
-                            Log.d(
-                                "VIEWMODEL",
-                                "checkIsFavorite: ${isFavorite.value.favoriteResults}"
-                            )
-
-                        },
-                        onError = { message ->
-                            _isFavorite.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    favoriteResults = state.favoriteResults.toMutableList()
-                                        .apply { add(null) },
-                                    errorMessage = "Ошибка для $bookId: $message"
-                                )
-                            }
-                        }
-                    )
-                }
-            }
+    }
+    fun onFavoriteLoading(){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = true
+            )
+        }
+    }
+    fun successCheckedIsFavorite(isFavorite: Boolean){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                favoriteResults = state.favoriteResults.toMutableList()
+                    .apply { add(isFavorite) }
+            )
+        }
+    }
+    fun errorIdentifyingFavorites(message: String){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                favoriteResults = state.favoriteResults.toMutableList()
+                    .apply { add(null) },
+                errorMessage = message
+            )
+        }
+    }
+    fun errorRequestToDB(message: String){
+        _dBRequestState.update { state ->
+            state.copy(
+                errorMessage = message
+            )
+        }
+    }
+    fun onSuccessRequestToDB (){
+        _dBRequestState.update { state ->
+            state.copy(
+                errorMessage = null
+            )
         }
     }
 
 
-    fun clearError() {
-        _error.value = null
+
+    fun checkIsFavorite(bookIds: List<String?>) {
+        clearFavorite()
+        viewModelScope.launch(Dispatchers.IO) {
+            for (bookId in bookIds) {
+                checkIsFavoriteUseCase(bookId ?: "").collect {
+                    it.handle(
+                        onLoading = ::onFavoriteLoading,
+                        onSuccess = ::successCheckedIsFavorite,
+                        onError = ::errorIdentifyingFavorites
+                    )
+                }
+            }
+        }
     }
 
     fun saveSearchSettings(

@@ -1,7 +1,6 @@
 package com.example.presentation.screens.components.items
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +57,6 @@ fun BookCard(
 ) {
 
     val currentBookInfo = currentBook.volumeInfo
-    var isPressed by remember { mutableStateOf(isFavorite) }
 
     Column(
         modifier = Modifier
@@ -87,7 +84,7 @@ fun BookCard(
                     .align(Alignment.TopEnd)
             ) {
                 FavoriteIcon(
-                    searchViewModel, currentBook, currentBookInfo, isPressed
+                    searchViewModel, currentBook, currentBookInfo, isFavorite
                 )
             }
         }
@@ -107,11 +104,11 @@ fun FavoriteIcon(
     searchViewModel: SearchScreenViewModel,
     currentBook: Items,
     currentBookInfo: VolumeInfo?,
-    isPressed: Boolean
+    isFavorite: Boolean
 ) {
-    var isPressed by remember { mutableStateOf(isPressed) }
-    // Анимация при нажатии
+    var isPressed by remember { mutableStateOf(isFavorite) }
     val context = LocalContext.current
+    val isError by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,
         animationSpec = if (isPressed) {
@@ -147,7 +144,10 @@ fun FavoriteIcon(
                 ) {
                     if (isPressed) {
                         searchViewModel.deleteFavorite(currentBook.id ?: "")
-                        context.showToast(R.string.book_delete_sucsess)
+                        context.showToast(
+                            isError.errorMessage ?: context.getString(R.string.book_delete_sucsess)
+                        )
+
                     } else {
                         searchViewModel.addFavorite(
                             bookId = currentBook.id ?: "",
@@ -157,7 +157,9 @@ fun FavoriteIcon(
                                 ?: "",
                             title = currentBookInfo?.title ?: ""
                         )
-                        context.showToast(R.string.add_book_sucsess)
+                        context.showToast(
+                            isError.errorMessage ?: context.getString(R.string.add_book_sucsess)
+                        )
                     }
                     isPressed = !isPressed
                 },
@@ -172,6 +174,6 @@ data class BookCardState(
     var errorMessage: String? = null,
 )
 
-fun Context.showToast(@StringRes messageRes: Int) {
+fun Context.showToast(messageRes: String) {
     Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show()
 }

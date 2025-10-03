@@ -6,7 +6,7 @@ import com.example.domain.local.db.Favorite
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
 import com.example.domain.local.db.usecases.GetFavoritesUseCase
-import com.example.domain.local.db.usecases.IsFavoriteUseCase
+import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.remote.models.Items
 import com.example.domain.remote.usecases.GetSelectedBookUseCase
 import com.example.presentation.screens.utils.handle
@@ -24,7 +24,7 @@ class DetailScreenViewModel @Inject constructor(
     private val getSelectedBookUseCase: GetSelectedBookUseCase,
     private val getFavoritesUseCase: GetFavoritesUseCase,
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    private val isFavoriteUseCase: IsFavoriteUseCase,
+    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
 ) : ViewModel() {
 
