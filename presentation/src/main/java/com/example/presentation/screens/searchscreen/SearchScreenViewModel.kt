@@ -98,7 +98,6 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     fun checkIsFavorite(bookIds: List<String?>) {
-        Log.d("STARTFUN", "checkIsFavorite: ")
         _isFavorite.update {
             it.copy(
                 isLoading = true,
@@ -147,46 +146,7 @@ class SearchScreenViewModel @Inject constructor(
             }
         }
     }
-//    fun checkIsFavorite(bookIds: List<String>) {
-//
-//        viewModelScope.launch (Dispatchers.IO){
-//            val results = mutableListOf<Boolean>()
-//            for (bookId in bookIds){
-//            isFavoriteUseCase(bookId)
-//                .collect {
-//                it.handle(
-//                onSuccess = { isFavorit ->
-//
-//                    _isFavorite.update { state ->
-//                        state.copy(
-//                            isLoading = false,
-//                            isFavorite = isFavorit,
-//                            errorMessage = null
-//                        )
-//                    }
-//                },
-//                onLoading = {
-//                    _isFavorite.update { state ->
-//                    state.copy(
-//                        isLoading = true,
-//                        isFavorite = false,
-//                        errorMessage = null
-//                    )
-//
-//                }
-//                            },
-//                onError = { message ->
-//                    _isFavorite.update { state ->
-//                        state.copy(
-//                            isLoading = false,
-//                            isFavorite = null,
-//                            errorMessage = "Ошибка проверки избранного: $message"
-//                        )
-//                    }
-//                }
-//            ) }
-//        }}
-//    }
+
 
     fun clearError() {
         _error.value = null
@@ -279,6 +239,10 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(postBooks: Books) {
+        val listIds = postBooks.items.map { it.id }
+        if (listIds.isNotEmpty()) {
+            checkIsFavorite(listIds)
+        }
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
@@ -286,10 +250,7 @@ class SearchScreenViewModel @Inject constructor(
                 errorMessage = null
             )
         }
-        val listIds = postBooks.items.map { it.id }
-        if (listIds.isNotEmpty()) {
-            checkIsFavorite(listIds)
-        }
+
     }
 
     private fun emptyKeyword() {

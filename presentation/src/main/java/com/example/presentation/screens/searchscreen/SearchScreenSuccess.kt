@@ -38,10 +38,8 @@ fun SearchScreenSuccess(
             key = { index -> keys[index] ?: 0 })
         { booksIndex ->
             val item = books?.get(booksIndex)
-            if (item != null) {
-                val isFavorite = favoritesBooks.favoriteResults.getOrNull(booksIndex) == true
-                Log.d("TAG", "SearchScreenSuccess: ${books!!.size}")
-                Log.d("TAG", "SearchScreenSuccess: ${favoritesBooks.favoriteResults.size}")
+            val isFavorite = favoritesBooks.favoriteResults.getOrNull(booksIndex)
+            if (item != null && isFavorite !=null) {
                 BookCard(
                     isFavorite,
                     item,

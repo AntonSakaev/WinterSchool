@@ -61,7 +61,6 @@ fun BookCard(
     val currentBookInfo = currentBook.volumeInfo
     var isPressed by remember { mutableStateOf(isFavorite) }
 
-
     Column(
         modifier = Modifier
             .height(290.dp)
@@ -99,7 +98,7 @@ fun BookCard(
                     R.string.no_authors
                 )
                 ).let { Text(text = it, color = Color.Gray) }
-        Text(text = currentBook.volumeInfo?.title ?: "")
+        Text(text = currentBookInfo?.title ?: "")
     }
 }
 
@@ -148,9 +147,7 @@ fun FavoriteIcon(
                 ) {
                     if (isPressed) {
                         searchViewModel.deleteFavorite(currentBook.id ?: "")
-
                         context.showToast(R.string.book_delete_sucsess)
-
                     } else {
                         searchViewModel.addFavorite(
                             bookId = currentBook.id ?: "",
@@ -161,7 +158,6 @@ fun FavoriteIcon(
                             title = currentBookInfo?.title ?: ""
                         )
                         context.showToast(R.string.add_book_sucsess)
-
                     }
                     isPressed = !isPressed
                 },
@@ -172,7 +168,7 @@ fun FavoriteIcon(
 
 data class BookCardState(
     var isLoading: Boolean = false,
-    val favoriteResults: MutableList<Boolean?> = mutableListOf<Boolean?>(),
+    val favoriteResults: MutableList<Boolean?> = mutableListOf(),
     var errorMessage: String? = null,
 )
 
