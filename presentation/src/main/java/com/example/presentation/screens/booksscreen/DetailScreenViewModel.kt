@@ -9,6 +9,7 @@ import com.example.domain.local.db.usecases.GetFavoritesUseCase
 import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.remote.models.Items
 import com.example.domain.remote.usecases.GetSelectedBookUseCase
+import com.example.presentation.screens.components.items.BookCardState
 import com.example.presentation.screens.utils.handle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,53 +33,6 @@ class DetailScreenViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     private var isInitialized = false
-
-    private val _favorites = MutableStateFlow<List<Favorite>>(emptyList())
-    val favorites = _favorites.asStateFlow()
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
-
-    private val _isFavorite = MutableStateFlow<Boolean?>(null)
-    val isFavorite: StateFlow<Boolean?> = _isFavorite.asStateFlow()
-
-//    fun checkIsFavorite(bookId: String) {
-//        viewModelScope.launch {
-//            try {
-//                _isFavorite.value = isFavoriteUseCase(bookId)
-//                _error.value = null
-//            } catch (e: Exception) {
-//                _error.value = "Ошибка проверки избранного: ${e.message}"
-//            }
-//        }
-//    }
-
-    fun clearError() {
-        _error.value = null
-    }
-
-
-//    fun deleteFavorite(bookId: String) {
-//        viewModelScope.launch {
-//            try {
-//                deleteFavoriteUseCase(bookId)
-//                _error.value = null
-//            } catch (e: Exception) {
-//                _error.value = "Ошибка удаления из избранного: ${e.message}"
-//            }
-//        }
-//    }
-
-//    fun addFavorite(favorite: Favorite) {
-//        viewModelScope.launch {
-//            try {
-//                addFavoriteUseCase(favorite)
-//                  _error.value = null
-//            } catch (e: Exception) {
-//                _error.value = "Ошибка добавления в избранное: ${e.message}"
-//            }
-//        }
-//    }
 
     fun getSelectedBook(keyword: String) {
         if (!isInitialized) {
@@ -104,6 +58,7 @@ class DetailScreenViewModel @Inject constructor(
             state.copy(
                 isLoading = false,
                 selectedBook = null,
+                isFavorite = false,
                 errorMessage = message
             )
         }
@@ -113,6 +68,7 @@ class DetailScreenViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 isLoading = true,
+                isFavorite = false,
                 selectedBook = null,
                 errorMessage = null
             )
@@ -129,5 +85,80 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
+    fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
+        val favorite = Favorite(
+            filmId = bookId,
+            imageUrl = thumbnail,
+            authors = authors,
+            bookName = title
+        )
+        viewModelScope.launch {
+            addFavoriteUseCase(favorite).handle(
+                onSuccess = { onSuccessRequestToDB() },
+                onError = ::errorRequestToDB,
+                onLoading=::onFavoriteLoading
+            )
+        }
+    }
+
+    fun deleteFavorite(bookId: String) {
+        viewModelScope.launch {
+            deleteFavoriteUseCase(bookId).handle(
+                onSuccess = { onSuccessRequestToDB() },
+                onError = ::errorRequestToDB
+            )
+        }
+    }
+
+    fun clearFavorite() {
+        _dBRequestState.update {
+            it.copy(
+                isLoading = true,
+                favoriteResults = mutableListOf(),
+                errorMessage = null
+            )
+        }
+    }
+    fun onFavoriteLoading(){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = true
+            )
+        }
+    }
+    fun successCheckedIsFavorite(isFavorite: Boolean){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                favoriteResults = state.favoriteResults.toMutableList()
+                    .apply { add(isFavorite) }
+            )
+        }
+    }
+    fun errorIdentifyingFavorites(message: String){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                favoriteResults = state.favoriteResults.toMutableList()
+                    .apply { add(null) },
+                errorMessage = message
+            )
+        }
+    }
+    fun errorRequestToDB(message: String){
+        _dBRequestState.update { state ->
+            state.copy(
+                errorMessage = message
+            )
+        }
+    }
+    fun onSuccessRequestToDB (){
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                errorMessage = null
+            )
+        }
+    }
 
 }

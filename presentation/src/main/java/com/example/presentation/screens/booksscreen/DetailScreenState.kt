@@ -5,6 +5,7 @@ import com.example.domain.remote.models.Items
 
 data class DetailScreenState(
     val selectedBook: Items? = null,
-     val isLoading: Boolean = true,
-     val errorMessage: String? = null,
+    val isLoading: Boolean = true,
+    val isFavorite: Boolean = false,
+    val errorMessage: String? = null,
 )
