@@ -54,6 +54,33 @@ fun BookCard(
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val isError by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
+    val currentBookInfo = currentBook.volumeInfo
+
+    fun onFavoriteIconClick(isPressed: Boolean) {
+        if (isPressed) {
+            searchViewModel.deleteFavorite(currentBook.id ?: "")
+            context.showToast(
+                isError.errorMessage
+                    ?: context.getString(R.string.book_delete_sucsess)
+            )
+
+        } else {
+            searchViewModel.addFavorite(
+                bookId = currentBook.id ?: "",
+                thumbnail = currentBookInfo?.imageLinks?.thumbnail
+                    ?: "",
+                authors = currentBookInfo?.authors?.joinToString()
+                    ?: "",
+                title = currentBookInfo?.title ?: ""
+            )
+            context.showToast(
+                isError.errorMessage
+                    ?: context.getString(R.string.add_book_sucsess)
+            )
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -80,32 +107,35 @@ fun BookCard(
                     .padding(top = 6.dp, end = 9.dp)
                     .align(Alignment.TopEnd)
             ) {
-                FavoriteIcon(
-                    searchViewModel, currentBook, isFavorite
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(color = Color.White, shape = CircleShape),
+                    contentAlignment = Alignment.Center
                 )
+                {
+                    FavoriteIcon(
+                        isFavorite = isFavorite,
+                        onImageClick = { onFavoriteIconClick(isPressed = isFavorite) }
+                    )
+                }
             }
         }
-        (
-                if (currentBook.volumeInfo?.authors?.isNotEmpty() == true)
-                    currentBook.volumeInfo?.authors?.first()
-                else stringResource(
-                    R.string.no_authors
-                )
-                ).let { Text(text = it ?:"", color = Color.Gray) }
+        Text(
+            text = currentBook.volumeInfo?.authors?.firstOrNull()
+                ?: stringResource(R.string.no_authors),
+            color = Color.Gray
+        )
         Text(text = currentBook.volumeInfo?.title ?: "")
     }
 }
 
 @Composable
 fun FavoriteIcon(
-    searchViewModel: SearchScreenViewModel,
-    currentBook: Items,
-    isFavorite: Boolean
+    isFavorite: Boolean,
+    onImageClick: (isPressed: Boolean) -> Unit
 ) {
-    val currentBookInfo = currentBook.volumeInfo
     var isPressed by remember { mutableStateOf(isFavorite) }
-    val context = LocalContext.current
-    val isError by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,
         animationSpec = if (isPressed) {
@@ -121,49 +151,23 @@ fun FavoriteIcon(
             tween(durationMillis = 0)
         }
     )
-    Box(
+    Icon(
+        imageVector = Icons.Favorite,
+        contentDescription = stringResource(R.string.favorite),
         modifier = Modifier
-            .size(24.dp)
-            .background(color = Color.White, shape = CircleShape),
-        contentAlignment = Alignment.Center
+            .size(12.dp)
+            .scale(pressScale)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                onImageClick(isPressed)
+                isPressed = !isPressed
+            },
+        tint = if (isPressed) Red else LightGray
     )
-    {
-
-        Icon(
-            imageVector = Icons.Favorite,
-            contentDescription = stringResource(R.string.favorite),
-            modifier = Modifier
-                .size(12.dp)
-                .scale(pressScale)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    if (isPressed) {
-                        searchViewModel.deleteFavorite(currentBook.id ?: "")
-                        context.showToast(
-                            isError.errorMessage ?: context.getString(R.string.book_delete_sucsess)
-                        )
-
-                    } else {
-                        searchViewModel.addFavorite(
-                            bookId = currentBook.id ?: "",
-                            thumbnail = currentBookInfo?.imageLinks?.thumbnail
-                                ?: "",
-                            authors = currentBookInfo?.authors?.joinToString()
-                                ?: "",
-                            title = currentBookInfo?.title ?: ""
-                        )
-                        context.showToast(
-                            isError.errorMessage ?: context.getString(R.string.add_book_sucsess)
-                        )
-                    }
-                    isPressed = !isPressed
-                },
-            tint = if (isPressed) Red else LightGray
-        )
-    }
 }
+
 
 data class BookCardState(
     var isLoading: Boolean = false,

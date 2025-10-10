@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,8 +23,13 @@ fun SearchScreenSuccess(
 
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
     val favoritesBooks by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
-    val books by rememberSaveable { mutableStateOf((state.postBooks?.items)) }
-    val keys: List<String?> = remember(books) { books?.map { it.id } ?: emptyList() }
+    val books by remember(state.postBooks?.items) {
+        derivedStateOf { state.postBooks?.items }
+    }
+
+    val keys by remember(books) {
+        derivedStateOf { books?.map { it.id } ?: emptyList() }
+    }
 
        LazyVerticalGrid(
         columns = GridCells.Fixed(2),

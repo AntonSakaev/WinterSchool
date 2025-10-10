@@ -66,10 +66,12 @@ class SearchScreenViewModel @Inject constructor(
             authors = authors,
             bookName = title
         )
+
         viewModelScope.launch {
             addFavoriteUseCase(favorite).handle(
                 onSuccess = { onSuccessRequestToDB() },
-                onError = ::errorRequestToDB
+                onError = ::errorRequestToDB,
+                onLoading=::onFavoriteLoading
             )
         }
     }
@@ -128,6 +130,7 @@ class SearchScreenViewModel @Inject constructor(
     fun onSuccessRequestToDB (){
         _dBRequestState.update { state ->
             state.copy(
+                isLoading = false,
                 errorMessage = null
             )
         }
