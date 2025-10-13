@@ -23,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
     private val getSelectedBookUseCase: GetSelectedBookUseCase,
-    private val getFavoritesUseCase: GetFavoritesUseCase,
     private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
     private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
@@ -32,11 +31,7 @@ class DetailScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DetailScreenState())
     val uiState = _uiState.asStateFlow()
 
-    private var isInitialized = false
-
     fun getSelectedBook(keyword: String) {
-        if (!isInitialized) {
-            isInitialized = true
             viewModelScope.launch(Dispatchers.IO) {
                 getSelectedBookUseCase(keyword).collect {
                     it.handle(
@@ -44,14 +39,12 @@ class DetailScreenViewModel @Inject constructor(
                         onLoading = ::onLoading,
                         onError = ::onError
                     )
+                    checkIsFavorite(keyword)
                 }
+
             }
-        }
     }
 
-    fun refresh(){
-        isInitialized = false
-    }
 
     private fun onError(message: String) {
         _uiState.update { state ->
@@ -105,60 +98,55 @@ class DetailScreenViewModel @Inject constructor(
         viewModelScope.launch {
             deleteFavoriteUseCase(bookId).handle(
                 onSuccess = { onSuccessRequestToDB() },
-                onError = ::errorRequestToDB
+                onError = ::errorRequestToDB,
+                onLoading=::onFavoriteLoading
             )
         }
     }
 
-    fun clearFavorite() {
-        _dBRequestState.update {
-            it.copy(
-                isLoading = true,
-                favoriteResults = mutableListOf(),
-                errorMessage = null
-            )
-        }
+    fun checkIsFavorite(bookId: String) {
+          viewModelScope.launch(Dispatchers.IO) {
+               checkIsFavoriteUseCase(bookId).collect {
+                    it.handle(
+                        onLoading = ::onFavoriteLoading,
+                        onSuccess = ::successCheckedIsFavorite,
+                        onError = ::errorRequestToDB
+                    )
+                }
+          }
     }
-    fun onFavoriteLoading(){
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = true
-            )
-        }
-    }
+
     fun successCheckedIsFavorite(isFavorite: Boolean){
-        _dBRequestState.update { state ->
+        _uiState.update { state ->
             state.copy(
-                isLoading = false,
-                favoriteResults = state.favoriteResults.toMutableList()
-                    .apply { add(isFavorite) }
-            )
-        }
-    }
-    fun errorIdentifyingFavorites(message: String){
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false,
-                favoriteResults = state.favoriteResults.toMutableList()
-                    .apply { add(null) },
-                errorMessage = message
-            )
-        }
-    }
-    fun errorRequestToDB(message: String){
-        _dBRequestState.update { state ->
-            state.copy(
-                errorMessage = message
-            )
-        }
-    }
-    fun onSuccessRequestToDB (){
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false,
-                errorMessage = null
+                isLoadingFromDB = false,
+                isFavorite = isFavorite
             )
         }
     }
 
+    fun onFavoriteLoading(){
+        _uiState.update { state ->
+            state.copy(
+                isLoadingFromDB = true
+            )
+        }
+    }
+
+    fun errorRequestToDB(message: String){
+        _uiState.update { state ->
+            state.copy(
+                errorMessage = message
+            )
+        }
+    }
+
+    fun onSuccessRequestToDB (){
+        _uiState.update { state ->
+            state.copy(
+                isLoadingFromDB = false,
+                errorMessage = null
+            )
+        }
+    }
 }

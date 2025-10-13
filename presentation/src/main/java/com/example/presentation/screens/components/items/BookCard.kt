@@ -41,6 +41,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Favorite
+import com.example.presentation.screens.components.showToast
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
@@ -106,18 +107,13 @@ fun BookCard(
                     .padding(top = 6.dp, end = 9.dp)
                     .align(Alignment.TopEnd)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(color = Color.White, shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                )
-                {
+
                     FavoriteIcon(
+
                         isFavorite = isFavorite,
                         onImageClick = { onFavoriteIconClick(isPressed = isFavorite) }
                     )
-                }
+
             }
         }
         Text(
@@ -129,51 +125,8 @@ fun BookCard(
     }
 }
 
-@Composable
-fun FavoriteIcon(
-    isFavorite: Boolean,
-    onImageClick: (isPressed: Boolean) -> Unit
-) {
-    var isPressed by remember { mutableStateOf(isFavorite) }
-    val pressScale by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0.9f,
-        animationSpec = if (isPressed) {
-            keyframes {
-                durationMillis = 700
-                0.7f at 100
-                1.3f at 250
-                0.8f at 400
-                1.1f at 550
-                1.0f at 700
-            }
-        } else {
-            tween(durationMillis = 0)
-        }
-    )
-    Icon(
-        imageVector = Icons.Favorite,
-        contentDescription = stringResource(R.string.favorite),
-        modifier = Modifier
-            .size(12.dp)
-            .scale(pressScale)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onImageClick(isPressed)
-                isPressed = !isPressed
-            },
-        tint = if (isPressed) Red else LightGray
-    )
-}
-
-
 data class BookCardState(
     var isLoading: Boolean = false,
     val favoriteResults: MutableList<Boolean?> = mutableListOf(),
     var errorMessage: String? = null,
 )
-
-fun Context.showToast(messageRes: String) {
-    Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show()
-}
