@@ -29,17 +29,16 @@ class DetailScreenViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun getSelectedBook(keyword: String) {
-            viewModelScope.launch(Dispatchers.IO) {
-                getSelectedBookUseCase(keyword).collect {
-                    it.handle(
-                        onSuccess = ::onSuccess,
-                        onLoading = ::onLoading,
-                        onError = ::onError
-                    )
-                    checkIsFavorite(keyword)
-                }
 
+        viewModelScope.launch(Dispatchers.IO) {
+             getSelectedBookUseCase(keyword).collect {
+                it.handle(
+                    onSuccess = ::onSuccess,
+                    onLoading = ::onLoading,
+                    onError = ::onError
+                )
             }
+        }
     }
 
 
@@ -48,7 +47,7 @@ class DetailScreenViewModel @Inject constructor(
             state.copy(
                 isLoading = false,
                 selectedBook = null,
-                isFavorite = false,
+                isFavorite = null,
                 errorMessage = message
             )
         }
@@ -58,7 +57,7 @@ class DetailScreenViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 isLoading = true,
-                isFavorite = false,
+                isFavorite = null,
                 selectedBook = null,
                 errorMessage = null
             )
@@ -66,13 +65,14 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(selectedBook: Items) {
-        _uiState.update { state ->
+          _uiState.update { state ->
             state.copy(
                 isLoading = false,
                 selectedBook = selectedBook,
                 errorMessage = null
             )
         }
+        checkIsFavorite(selectedBook.id ?:"")
     }
 
     fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
@@ -84,9 +84,9 @@ class DetailScreenViewModel @Inject constructor(
         )
         viewModelScope.launch {
             addFavoriteUseCase(favorite).handle(
-                onSuccess = { onSuccessRequestToDB() },
+                onSuccess = { onSuccessRequestToDB(bookId) },
                 onError = ::errorRequestToDB,
-                onLoading=::onFavoriteLoading
+                onLoading = ::onFavoriteLoading
             )
         }
     }
@@ -94,26 +94,27 @@ class DetailScreenViewModel @Inject constructor(
     fun deleteFavorite(bookId: String) {
         viewModelScope.launch {
             deleteFavoriteUseCase(bookId).handle(
-                onSuccess = { onSuccessRequestToDB() },
+                onSuccess = { onSuccessRequestToDB(bookId) },
                 onError = ::errorRequestToDB,
-                onLoading=::onFavoriteLoading
+                onLoading = ::onFavoriteLoading
             )
         }
     }
 
     fun checkIsFavorite(bookId: String) {
-          viewModelScope.launch(Dispatchers.IO) {
-               checkIsFavoriteUseCase(bookId).collect {
-                    it.handle(
-                        onLoading = ::onFavoriteLoading,
-                        onSuccess = ::successCheckedIsFavorite,
-                        onError = ::errorRequestToDB
-                    )
-                }
-          }
+        clearFavorite()
+        viewModelScope.launch(Dispatchers.IO) {
+            checkIsFavoriteUseCase(bookId).collect {
+                it.handle(
+                    onLoading = ::onFavoriteLoading,
+                    onSuccess = ::successCheckedIsFavorite,
+                    onError = ::errorRequestToDB
+                )
+            }
+        }
     }
 
-    fun successCheckedIsFavorite(isFavorite: Boolean){
+    fun successCheckedIsFavorite(isFavorite: Boolean) {
         _uiState.update { state ->
             state.copy(
                 isLoadingFromDB = false,
@@ -122,26 +123,39 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
-    fun onFavoriteLoading(){
+    fun onSuccessRequestToDB(bookId: String) {
         _uiState.update { state ->
             state.copy(
-                isLoadingFromDB = true
+                isLoadingFromDB = false,
+                errorMessage = null
+            )
+        }
+        checkIsFavorite(bookId)
+    }
+
+    fun onFavoriteLoading() {
+        _uiState.update { state ->
+            state.copy(
+                isLoadingFromDB = true,
+                isFavorite = null
             )
         }
     }
 
-    fun errorRequestToDB(message: String){
+    fun errorRequestToDB(message: String) {
         _uiState.update { state ->
             state.copy(
+                isLoading = false,
+                isFavorite = null,
                 errorMessage = message
             )
         }
     }
+    fun clearFavorite() {
+        _uiState.update {
+            it.copy(
 
-    fun onSuccessRequestToDB (){
-        _uiState.update { state ->
-            state.copy(
-                isLoadingFromDB = false,
+                isFavorite = null,
                 errorMessage = null
             )
         }

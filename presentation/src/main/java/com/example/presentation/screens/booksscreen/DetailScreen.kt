@@ -1,5 +1,6 @@
 package com.example.presentation.screens.booksscreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -89,7 +90,6 @@ fun DetailScreen(
         Modifier
             .padding(innerPaddingValues)
             .padding(top = 28.dp),
-
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -115,7 +115,14 @@ fun DetailScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             )
             {
-                    FavoriteIcon(state.isFavorite, {onFavoriteIconClick(state.isFavorite)})
+                when {
+                    !state.isLoadingFromDB &&  state.isFavorite != null -> {
+                        Log.d("TAG", "DetailScreen: ${state.isFavorite}")
+                        FavoriteIcon(
+                            state.isFavorite == true,
+                            { onFavoriteIconClick(state.isFavorite == true) })
+                    }
+                }
             }
         }
         when {
@@ -130,6 +137,7 @@ fun DetailScreen(
                     }
                 )
             }
+
             else -> {
                 BookInfo(state.selectedBook)
             }
