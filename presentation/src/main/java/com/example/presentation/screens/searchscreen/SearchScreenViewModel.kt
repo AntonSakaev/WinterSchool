@@ -47,6 +47,9 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
 
+    private val _dBRequestState = MutableStateFlow(BookCardState())
+    val dBRequestState = _dBRequestState.asStateFlow()
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             keyText.collectLatest { keyword ->
@@ -55,9 +58,6 @@ class SearchScreenViewModel @Inject constructor(
             }
         }
     }
-
-    private val _dBRequestState = MutableStateFlow(BookCardState())
-    val dBRequestState = _dBRequestState.asStateFlow()
 
     fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
         val favorite = Favorite(
@@ -94,6 +94,7 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun onFavoriteLoading(){
         _dBRequestState.update { state ->
             state.copy(
@@ -101,6 +102,7 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun successCheckedIsFavorite(isFavorite: Boolean){
         _dBRequestState.update { state ->
             state.copy(
@@ -110,6 +112,7 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun errorIdentifyingFavorites(message: String){
         _dBRequestState.update { state ->
             state.copy(
@@ -120,6 +123,7 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun errorRequestToDB(message: String){
         _dBRequestState.update { state ->
             state.copy(
@@ -127,6 +131,7 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun onSuccessRequestToDB (){
         _dBRequestState.update { state ->
             state.copy(
@@ -135,8 +140,6 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
-
-
 
     fun checkIsFavorite(bookIds: List<String?>) {
         clearFavorite()
@@ -153,45 +156,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveSearchSettings(
-        authorName: String,
-        sortByDate: Boolean,
-        bestMatch: Boolean
-    ) {
-        val params = SearchSettings(
-            authorName = authorName, sortByDate = sortByDate, bestMatch = bestMatch
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            saveSearchSettingsUseCase(params)
-        }
-        getSearchSettings()
-    }
 
-    fun getSearchSettings() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _searchParams.value = getSearchSettingsUseCase()
-        }
-    }
-
-    private fun updateSearchSettings(update: SearchSettings.() -> SearchSettings) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val newParams = _searchParams.value.update()
-            saveSearchSettingsUseCase(newParams)
-            getSearchSettings()
-        }
-    }
-
-    fun clearAuthorNameFilter() = updateSearchSettings {
-        copy(authorName = "")
-    }
-
-    fun clearSortByDateFilter() = updateSearchSettings {
-        copy(sortByDate = false)
-    }
-
-    fun clearBestMatchFilter() = updateSearchSettings {
-        copy(bestMatch = false)
-    }
 
     fun keywordInput(keyword: String) {
         _keyText.value = keyword
@@ -265,4 +230,47 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
     //endregion
+
+    //region Настройки поиска
+    fun saveSearchSettings(
+        authorName: String,
+        sortByDate: Boolean,
+        bestMatch: Boolean
+    ) {
+        val params = SearchSettings(
+            authorName = authorName, sortByDate = sortByDate, bestMatch = bestMatch
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            saveSearchSettingsUseCase(params)
+        }
+        getSearchSettings()
+    }
+
+    fun getSearchSettings() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _searchParams.value = getSearchSettingsUseCase()
+        }
+    }
+
+    private fun updateSearchSettings(update: SearchSettings.() -> SearchSettings) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newParams = _searchParams.value.update()
+            saveSearchSettingsUseCase(newParams)
+            getSearchSettings()
+        }
+    }
+
+    fun clearAuthorNameFilter() = updateSearchSettings {
+        copy(authorName = "")
+    }
+
+    fun clearSortByDateFilter() = updateSearchSettings {
+        copy(sortByDate = false)
+    }
+
+    fun clearBestMatchFilter() = updateSearchSettings {
+        copy(bestMatch = false)
+    }
+    //endregion
+
 }

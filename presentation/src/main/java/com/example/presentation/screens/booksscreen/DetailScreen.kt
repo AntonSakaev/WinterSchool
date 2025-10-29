@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +60,7 @@ fun DetailScreen(
 
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
@@ -119,8 +122,8 @@ fun DetailScreen(
                     !state.isLoadingFromDB &&  state.isFavorite != null -> {
                         Log.d("TAG", "DetailScreen: ${state.isFavorite}")
                         FavoriteIcon(
-                            state.isFavorite == true,
-                            { onFavoriteIconClick(state.isFavorite == true) })
+                            isFavorite = state.isFavorite == true,
+                            onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
                     }
                 }
             }

@@ -29,7 +29,6 @@ class DetailScreenViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun getSelectedBook(keyword: String) {
-
         viewModelScope.launch(Dispatchers.IO) {
              getSelectedBookUseCase(keyword).collect {
                 it.handle(
@@ -130,7 +129,7 @@ class DetailScreenViewModel @Inject constructor(
                 errorMessage = null
             )
         }
-        checkIsFavorite(bookId)
+       checkIsFavorite(bookId)
     }
 
     fun onFavoriteLoading() {
@@ -154,7 +153,6 @@ class DetailScreenViewModel @Inject constructor(
     fun clearFavorite() {
         _uiState.update {
             it.copy(
-
                 isFavorite = null,
                 errorMessage = null
             )

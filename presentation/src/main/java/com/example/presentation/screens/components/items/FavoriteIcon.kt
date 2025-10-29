@@ -35,8 +35,6 @@ fun FavoriteIcon(
 ) {
     var isPressed by remember { mutableStateOf(isFavorite) }
 
-
-    Log.d("TAG", "FavoriteIcon: $isPressed")
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,
         animationSpec = if (isPressed) {
