@@ -9,15 +9,16 @@ import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
 import com.example.presentation.screens.components.items.BookCardState
 import com.example.presentation.screens.utils.handle
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-abstract class FavoriteViewModel(
+abstract class FavoriteViewModel (
     private val addFavoriteUseCase: AddFavoriteUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    val checkIsFavoriteUseCase: CheckIsFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
 ) : ViewModel() {
 
     protected val _dBRequestState = MutableStateFlow(BookCardState())
@@ -83,4 +84,5 @@ abstract class FavoriteViewModel(
             )
         }
     }
+
 }

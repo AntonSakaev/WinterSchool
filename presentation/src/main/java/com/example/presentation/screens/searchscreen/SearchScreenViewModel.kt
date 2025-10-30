@@ -26,14 +26,13 @@ class SearchScreenViewModel @Inject constructor(
     private val getBooksInfoUseCase: GetBooksInfoUseCase,
     private val saveSearchSettingsUseCase: SaveSearchSettings,
     private val getSearchSettingsUseCase: GetSearchSettings,
+    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     addFavoriteUseCase: AddFavoriteUseCase,
     deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    checkIsFavoriteUseCase: CheckIsFavoriteUseCase
 ) : FavoriteViewModel(
     addFavoriteUseCase = addFavoriteUseCase,
-    deleteFavoriteUseCase = deleteFavoriteUseCase,
-    checkIsFavoriteUseCase = checkIsFavoriteUseCase
-) {
+    deleteFavoriteUseCase = deleteFavoriteUseCase
+   ) {
 
     private val _uiState = MutableStateFlow(SearchScreenState())
     val uiState = _uiState.asStateFlow()
@@ -48,7 +47,7 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
 
-    private val _favoriteResults = MutableStateFlow<MutableList<Boolean?>>(mutableListOf())
+    private val _favoriteResults = MutableStateFlow<MutableMap< String?, Boolean?>>(mutableMapOf())
     val favoriteResults  = _favoriteResults.asStateFlow()
 
     init {
@@ -62,45 +61,6 @@ class SearchScreenViewModel @Inject constructor(
 
     fun keywordInput(keyword: String) {
         _keyText.value = keyword
-    }
-
-    fun checkIsFavorite(bookIds: List<String?>) {
-        clearFavorite()
-        _favoriteResults.value.clear()
-        viewModelScope.launch(Dispatchers.IO) {
-            for (bookId in bookIds) {
-                checkIsFavoriteUseCase(bookId ?: "").collect {
-                    it.handle(
-                        onLoading = ::onFavoriteLoading,
-                        onSuccess = ::successCheckedIsFavorite,
-                        onError = ::errorIdentifyingFavorites
-                    )
-                }
-            }
-        }
-    }
-
-    fun successCheckedIsFavorite(isFavorite: Boolean) {
-        _favoriteResults.update { currentList ->
-            currentList.toMutableList().apply { add(isFavorite) }
-        }
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false
-            )
-        }
-    }
-
-    fun errorIdentifyingFavorites(message: String) {
-        _favoriteResults.update { currentList ->
-            currentList.toMutableList().apply { add(null) }
-        }
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false,
-                errorMessage = message
-            )
-        }
     }
 
     private suspend fun launchSearch(keyword: String) {
@@ -169,6 +129,48 @@ class SearchScreenViewModel @Inject constructor(
             )
         }
     }
+
+    fun checkIsFavorite(bookIds: List<String?>) {
+        clearFavorite()
+        _favoriteResults.value.clear()
+        viewModelScope.launch(Dispatchers.IO) {
+            for (bookId in bookIds) {
+                checkIsFavoriteUseCase(bookId ?: "").collect {
+                    it.handle(
+                        onLoading = ::onFavoriteLoading,
+                        onSuccess = {isFavorite -> successCheckedIsFavorite (bookId ?:"", isFavorite) },
+                        onError = { errorMesage -> errorIdentifyingFavorites (bookId ?:"", errorMesage)}
+                    )
+                }
+            }
+        }
+    }
+
+
+
+    fun successCheckedIsFavorite(bookId: String, isFavorite: Boolean) {
+        _favoriteResults.update { currentList ->
+            currentList.apply { put(bookId, isFavorite) }
+        }
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false
+            )
+        }
+    }
+
+    fun errorIdentifyingFavorites(bookId: String, message: String) {
+        _favoriteResults.update { currentList ->
+            currentList.apply { put(bookId, null) }
+        }
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                errorMessage = message
+            )
+        }
+    }
+
 
     //region Работа с настройками поиска
     fun saveSearchSettings(

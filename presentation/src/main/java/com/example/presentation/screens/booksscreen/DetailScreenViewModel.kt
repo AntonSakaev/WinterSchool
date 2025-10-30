@@ -20,13 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
     private val getSelectedBookUseCase: GetSelectedBookUseCase,
+    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     deleteFavoriteUseCase: DeleteFavoriteUseCase,
-    checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     addFavoriteUseCase: AddFavoriteUseCase,
 ) : FavoriteViewModel(
     addFavoriteUseCase = addFavoriteUseCase,
-    deleteFavoriteUseCase = deleteFavoriteUseCase,
-    checkIsFavoriteUseCase = checkIsFavoriteUseCase
+    deleteFavoriteUseCase = deleteFavoriteUseCase
 ) {
 
     private val _uiState = MutableStateFlow(DetailScreenState())
