@@ -20,7 +20,7 @@ fun SearchScreenSuccess(
 ) {
 
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
-    val favoritesBooks by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
+    val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
     val books by remember(state.postBooks?.items) {
         derivedStateOf { state.postBooks?.items }
     }
@@ -40,7 +40,7 @@ fun SearchScreenSuccess(
             key = { index -> keys[index] ?: 0 })
         { booksIndex ->
             val item = books?.get(booksIndex)
-            val isFavorite = favoritesBooks.favoriteResults.getOrNull(booksIndex)
+            val isFavorite = favoritesBooks.getOrNull(booksIndex)
             if (item != null && isFavorite !=null) {
                 BookCard(
                     isFavorite,

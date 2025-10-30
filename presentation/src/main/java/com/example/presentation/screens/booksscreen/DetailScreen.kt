@@ -59,8 +59,8 @@ fun DetailScreen(
 ) {
 
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
+    val dBState by detailScreenViewModel.dBRequestState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
@@ -119,10 +119,9 @@ fun DetailScreen(
             )
             {
                 when {
-                    !state.isLoadingFromDB &&  state.isFavorite != null -> {
-                        Log.d("TAG", "DetailScreen: ${state.isFavorite}")
+                    !dBState.isLoading &&  dBState.isFavorite != null -> {
                         FavoriteIcon(
-                            isFavorite = state.isFavorite == true,
+                            isFavorite = dBState.isFavorite == true,
                             onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
                     }
                 }

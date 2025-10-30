@@ -1,4 +1,3 @@
-
 package com.example.presentation.screens.searchscreen
 
 import androidx.lifecycle.viewModelScope
@@ -41,13 +40,16 @@ class SearchScreenViewModel @Inject constructor(
 
     private val _keyText = MutableStateFlow("")
 
-    private val lastKnowKeyword = MutableStateFlow("")
-
     @OptIn(FlowPreview::class)
     private val keyText = _keyText.asStateFlow().debounce(2000)
 
+    private val lastKnowKeyword = MutableStateFlow("")
+
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
+
+    private val _favoriteResults = MutableStateFlow<MutableList<Boolean?>>(mutableListOf())
+    val favoriteResults  = _favoriteResults.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,6 +62,45 @@ class SearchScreenViewModel @Inject constructor(
 
     fun keywordInput(keyword: String) {
         _keyText.value = keyword
+    }
+
+    fun checkIsFavorite(bookIds: List<String?>) {
+        clearFavorite()
+        _favoriteResults.value.clear()
+        viewModelScope.launch(Dispatchers.IO) {
+            for (bookId in bookIds) {
+                checkIsFavoriteUseCase(bookId ?: "").collect {
+                    it.handle(
+                        onLoading = ::onFavoriteLoading,
+                        onSuccess = ::successCheckedIsFavorite,
+                        onError = ::errorIdentifyingFavorites
+                    )
+                }
+            }
+        }
+    }
+
+    fun successCheckedIsFavorite(isFavorite: Boolean) {
+        _favoriteResults.update { currentList ->
+            currentList.toMutableList().apply { add(isFavorite) }
+        }
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false
+            )
+        }
+    }
+
+    fun errorIdentifyingFavorites(message: String) {
+        _favoriteResults.update { currentList ->
+            currentList.toMutableList().apply { add(null) }
+        }
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                errorMessage = message
+            )
+        }
     }
 
     private suspend fun launchSearch(keyword: String) {
@@ -129,6 +170,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
+    //region Работа с настройками поиска
     fun saveSearchSettings(
         authorName: String,
         sortByDate: Boolean,
@@ -168,4 +210,5 @@ class SearchScreenViewModel @Inject constructor(
     fun clearBestMatchFilter() = updateSearchSettings {
         copy(bestMatch = false)
     }
+    //endregion
 }

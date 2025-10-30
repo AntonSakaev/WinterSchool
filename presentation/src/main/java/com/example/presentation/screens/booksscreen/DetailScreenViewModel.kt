@@ -49,7 +49,6 @@ class DetailScreenViewModel @Inject constructor(
             state.copy(
                 isLoading = false,
                 selectedBook = null,
-                isFavorite = null,
                 errorMessage = message
             )
         }
@@ -59,7 +58,6 @@ class DetailScreenViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(
                 isLoading = true,
-                isFavorite = null,
                 selectedBook = null,
                 errorMessage = null
             )
@@ -67,8 +65,6 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(selectedBook: Items) {
-//        val listIds = listOf(selectedBook.id)
-//        checkIsFavorite(listIds)
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
@@ -76,6 +72,28 @@ class DetailScreenViewModel @Inject constructor(
                 errorMessage = null
             )
         }
-        checkThisForFavorite(selectedBook.id ?:"")
+        checkThisForFavorite(selectedBook.id ?: "")
+    }
+
+    fun checkThisForFavorite(bookId: String) {
+        clearFavorite()
+        viewModelScope.launch(Dispatchers.IO) {
+            checkIsFavoriteUseCase(bookId).collect {
+                it.handle(
+                    onLoading = ::onFavoriteLoading,
+                    onSuccess = ::successCheckedIsFavorite,
+                    onError = ::errorRequestToDB
+                )
+            }
+        }
+    }
+
+    fun successCheckedIsFavorite(isFavorite: Boolean) {
+        _dBRequestState.update { state ->
+            state.copy(
+                isLoading = false,
+                isFavorite = isFavorite
+            )
+        }
     }
 }
