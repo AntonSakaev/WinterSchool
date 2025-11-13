@@ -104,7 +104,7 @@ fun DetailScreen(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .clickable {
-                        onExitClick()
+                          onExitClick()
                     })
             Card(
                 modifier = Modifier

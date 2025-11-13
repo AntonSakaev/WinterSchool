@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.screens.components.items.BookCard
 
@@ -22,6 +22,7 @@ fun SearchScreenSuccess(
 ) {
 
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
+
     val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
 
     val books by remember(state.postBooks?.items) {
@@ -32,7 +33,7 @@ fun SearchScreenSuccess(
         derivedStateOf { books?.map { it.id } ?: emptyList() }
     }
 
-      LazyVerticalGrid(
+    LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -44,7 +45,8 @@ fun SearchScreenSuccess(
         { booksIndex ->
             val item = books?.get(booksIndex)
             val isFavorite = favoritesBooks.values.toMutableList().getOrNull(booksIndex)
-            if (item != null && isFavorite !=null) {
+            Log.d("TAG", "SearchScreenSuccess: ${favoritesBooks}")
+            if (item != null && isFavorite != null) {
                 BookCard(
                     isFavorite,
                     item,

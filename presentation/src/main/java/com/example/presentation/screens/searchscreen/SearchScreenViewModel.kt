@@ -1,5 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
@@ -32,7 +33,7 @@ class SearchScreenViewModel @Inject constructor(
 ) : FavoriteViewModel(
     addFavoriteUseCase = addFavoriteUseCase,
     deleteFavoriteUseCase = deleteFavoriteUseCase
-   ) {
+) {
 
     private val _uiState = MutableStateFlow(SearchScreenState())
     val uiState = _uiState.asStateFlow()
@@ -47,8 +48,8 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
 
-    private val _favoriteResults = MutableStateFlow<MutableMap< String?, Boolean?>>(mutableMapOf())
-    val favoriteResults  = _favoriteResults.asStateFlow()
+    private val _favoriteResults = MutableStateFlow<MutableMap<String?, Boolean?>>(mutableMapOf())
+    val favoriteResults = _favoriteResults.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -138,15 +139,23 @@ class SearchScreenViewModel @Inject constructor(
                 checkIsFavoriteUseCase(bookId ?: "").collect {
                     it.handle(
                         onLoading = ::onFavoriteLoading,
-                        onSuccess = {isFavorite -> successCheckedIsFavorite (bookId ?:"", isFavorite) },
-                        onError = { errorMesage -> errorIdentifyingFavorites (bookId ?:"", errorMesage)}
+                        onSuccess = { isFavorite ->
+                            successCheckedIsFavorite(
+                                bookId ?: "",
+                                isFavorite
+                            )
+                        },
+                        onError = { errorMesage ->
+                            errorIdentifyingFavorites(
+                                bookId ?: "",
+                                errorMesage
+                            )
+                        }
                     )
                 }
             }
         }
     }
-
-
 
     fun successCheckedIsFavorite(bookId: String, isFavorite: Boolean) {
         _favoriteResults.update { currentList ->
@@ -171,6 +180,24 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
+    fun refreshFavorite(bookId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            checkIsFavoriteUseCase(bookId).collect {
+                it.handle(
+                    onLoading = ::onFavoriteLoading,
+                    onSuccess = { isFavorite ->
+                        _favoriteResults.update { currentList ->
+                            currentList.apply { put(bookId, isFavorite) }
+
+                        }
+                        ::onSuccessRequestToDB
+                     },
+                    onError = { errorMesage -> errorIdentifyingFavorites(bookId, errorMesage) }
+                )
+
+            }
+        }
+    }
 
     //region Работа с настройками поиска
     fun saveSearchSettings(

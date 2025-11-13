@@ -1,6 +1,5 @@
 package com.example.presentation.screens.searchscreen
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.domain.local.prefs.models.SearchSettings
-import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.screens.components.icons.Clear
 import com.example.presentation.theme.Blue
