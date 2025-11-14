@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.screens.components.items.BookCard
 
@@ -32,6 +36,8 @@ fun SearchScreenSuccess(
     val keys by remember(books) {
         derivedStateOf { books?.map { it.id } ?: emptyList() }
     }
+
+    OnResumeEffect { searchViewModel. }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -54,6 +60,25 @@ fun SearchScreenSuccess(
                     onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun OnResumeEffect(onResume: () -> Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                onResume()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }

@@ -75,7 +75,7 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     fun checkThisForFavorite(bookId: String) {
-        clearFavorite()
+      //  clearFavorite()
         viewModelScope.launch(Dispatchers.IO) {
             checkIsFavoriteUseCase(bookId).collect {
                 it.handle(

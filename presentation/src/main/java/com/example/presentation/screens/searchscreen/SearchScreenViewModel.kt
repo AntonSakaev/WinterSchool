@@ -106,7 +106,7 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(postBooks: Books) {
-        val listIds = postBooks.items.map { it.id }
+        val listIds = postBooks.items.map { it.id}
         if (listIds.isNotEmpty()) {
             checkIsFavorite(listIds)
         }
@@ -132,10 +132,13 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     fun checkIsFavorite(bookIds: List<String?>) {
-        clearFavorite()
-        _favoriteResults.value.clear()
+      //  clearFavorite()
+       // _favoriteResults.value.clear()
         viewModelScope.launch(Dispatchers.IO) {
             for (bookId in bookIds) {
+                _favoriteResults.update { currentList ->
+                    currentList.apply { put(bookId, null) }
+                }
                 checkIsFavoriteUseCase(bookId ?: "").collect {
                     it.handle(
                         onLoading = ::onFavoriteLoading,
@@ -180,21 +183,22 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    fun refreshFavorite(bookId: String) {
+    fun refreshFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
+//            val currentMap = _favoriteResults.value.forEach {  }
+//            val updatedMap = mutableMapOf<String?, Boolean?>()
+
             checkIsFavoriteUseCase(bookId).collect {
                 it.handle(
                     onLoading = ::onFavoriteLoading,
                     onSuccess = { isFavorite ->
                         _favoriteResults.update { currentList ->
                             currentList.apply { put(bookId, isFavorite) }
-
                         }
                         ::onSuccessRequestToDB
                      },
                     onError = { errorMesage -> errorIdentifyingFavorites(bookId, errorMesage) }
                 )
-
             }
         }
     }
