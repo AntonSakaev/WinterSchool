@@ -136,7 +136,6 @@ fun DetailScreen(
                     }
                 )
             }
-
             else -> {
                 BookInfo(state.selectedBook)
             }

@@ -1,5 +1,6 @@
 package com.example.presentation.screens.components.items
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,23 +36,23 @@ import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    isFavorite: Boolean,
     currentBook: Items,
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val isError by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
+    val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
     val currentBookInfo = currentBook.volumeInfo
+    val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
+    val isFavorite by rememberUpdatedState (favoritesBooks[currentBook.id])
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
             searchViewModel.deleteFavorite(currentBook.id ?: "")
             context.showToast(
-                isError.errorMessage
+                dbState.errorMessage
                     ?: context.getString(R.string.book_delete_sucsess)
             )
-
         } else {
             searchViewModel.addFavorite(
                 bookId = currentBook.id ?: "",
@@ -58,7 +63,7 @@ fun BookCard(
                 title = currentBookInfo?.title ?: ""
             )
             context.showToast(
-                isError.errorMessage
+                dbState.errorMessage
                     ?: context.getString(R.string.add_book_sucsess)
             )
         }
@@ -89,11 +94,10 @@ fun BookCard(
                     .padding(top = 6.dp, end = 9.dp)
                     .align(Alignment.TopEnd)
             ) {
-
-                    FavoriteIcon(
-                        isFavorite = isFavorite,
-                        onImageClick = {isPressed ->  onFavoriteIconClick(isPressed = isPressed)}
-                    )
+                FavoriteIcon(
+                    isFavorite = isFavorite == true,
+                    onImageClick = { isPressed -> onFavoriteIconClick(isPressed = isPressed) }
+                )
             }
         }
         Text(
@@ -103,6 +107,7 @@ fun BookCard(
         )
         Text(text = currentBook.volumeInfo?.title ?: "")
     }
+
 }
 
 data class BookCardState(

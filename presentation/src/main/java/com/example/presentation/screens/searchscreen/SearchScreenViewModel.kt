@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Collections.emptyMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,10 +28,11 @@ class SearchScreenViewModel @Inject constructor(
     private val getBooksInfoUseCase: GetBooksInfoUseCase,
     private val saveSearchSettingsUseCase: SaveSearchSettings,
     private val getSearchSettingsUseCase: GetSearchSettings,
-    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
+    checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     addFavoriteUseCase: AddFavoriteUseCase,
     deleteFavoriteUseCase: DeleteFavoriteUseCase,
 ) : FavoriteViewModel(
+    checkIsFavoriteUseCase = checkIsFavoriteUseCase,
     addFavoriteUseCase = addFavoriteUseCase,
     deleteFavoriteUseCase = deleteFavoriteUseCase
 ) {
@@ -48,9 +50,6 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
 
-    private val _favoriteResults = MutableStateFlow<MutableMap<String?, Boolean?>>(mutableMapOf())
-    val favoriteResults = _favoriteResults.asStateFlow()
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             keyText.collectLatest { keyword ->
@@ -65,6 +64,7 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private suspend fun launchSearch(keyword: String) {
+        _favoriteResults.value.clear()
         if (keyword.isNotEmpty()) {
             getBooksInfoUseCase(keyword).collect {
                 it.handle(
@@ -106,10 +106,13 @@ class SearchScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(postBooks: Books) {
-        val listIds = postBooks.items.map { it.id}
-        if (listIds.isNotEmpty()) {
-            checkIsFavorite(listIds)
+        _favoriteResults.value.clear()
+        val listIds = postBooks.items.map { it.id }
+        for (bookId in listIds) {
+        _favoriteResults.update { currentList ->
+            currentList.apply { put(bookId, null) }
         }
+        checkThisForFavorite(bookId ?:"")}
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
@@ -117,7 +120,6 @@ class SearchScreenViewModel @Inject constructor(
                 errorMessage = null
             )
         }
-
     }
 
     private fun emptyKeyword() {
@@ -131,79 +133,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    fun checkIsFavorite(bookIds: List<String?>) {
-      //  clearFavorite()
-       // _favoriteResults.value.clear()
-        viewModelScope.launch(Dispatchers.IO) {
-            for (bookId in bookIds) {
-                _favoriteResults.update { currentList ->
-                    currentList.apply { put(bookId, null) }
-                }
-                checkIsFavoriteUseCase(bookId ?: "").collect {
-                    it.handle(
-                        onLoading = ::onFavoriteLoading,
-                        onSuccess = { isFavorite ->
-                            successCheckedIsFavorite(
-                                bookId ?: "",
-                                isFavorite
-                            )
-                        },
-                        onError = { errorMesage ->
-                            errorIdentifyingFavorites(
-                                bookId ?: "",
-                                errorMesage
-                            )
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    fun successCheckedIsFavorite(bookId: String, isFavorite: Boolean) {
-        _favoriteResults.update { currentList ->
-            currentList.apply { put(bookId, isFavorite) }
-        }
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false
-            )
-        }
-    }
-
-    fun errorIdentifyingFavorites(bookId: String, message: String) {
-        _favoriteResults.update { currentList ->
-            currentList.apply { put(bookId, null) }
-        }
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false,
-                errorMessage = message
-            )
-        }
-    }
-
-    fun refreshFavorite() {
-        viewModelScope.launch(Dispatchers.IO) {
-//            val currentMap = _favoriteResults.value.forEach {  }
-//            val updatedMap = mutableMapOf<String?, Boolean?>()
-
-            checkIsFavoriteUseCase(bookId).collect {
-                it.handle(
-                    onLoading = ::onFavoriteLoading,
-                    onSuccess = { isFavorite ->
-                        _favoriteResults.update { currentList ->
-                            currentList.apply { put(bookId, isFavorite) }
-                        }
-                        ::onSuccessRequestToDB
-                     },
-                    onError = { errorMesage -> errorIdentifyingFavorites(bookId, errorMesage) }
-                )
-            }
-        }
-    }
-
-    //region Работа с настройками поиска
+     //region Работа с настройками поиска
     fun saveSearchSettings(
         authorName: String,
         sortByDate: Boolean,

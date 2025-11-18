@@ -1,4 +1,3 @@
-
 package com.example.presentation.screens.booksscreen
 
 import androidx.lifecycle.viewModelScope
@@ -20,14 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
     private val getSelectedBookUseCase: GetSelectedBookUseCase,
-    private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
+    checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
     deleteFavoriteUseCase: DeleteFavoriteUseCase,
     addFavoriteUseCase: AddFavoriteUseCase,
-) : FavoriteViewModel(
+) : FavoriteViewModel (
+    checkIsFavoriteUseCase = checkIsFavoriteUseCase,
     addFavoriteUseCase = addFavoriteUseCase,
     deleteFavoriteUseCase = deleteFavoriteUseCase
 ) {
-
     private val _uiState = MutableStateFlow(DetailScreenState())
     val uiState = _uiState.asStateFlow()
 
@@ -64,34 +63,12 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(selectedBook: Items) {
+        checkThisForFavorite(selectedBook.id ?: "")
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
                 selectedBook = selectedBook,
                 errorMessage = null
-            )
-        }
-        checkThisForFavorite(selectedBook.id ?: "")
-    }
-
-    fun checkThisForFavorite(bookId: String) {
-      //  clearFavorite()
-        viewModelScope.launch(Dispatchers.IO) {
-            checkIsFavoriteUseCase(bookId).collect {
-                it.handle(
-                    onLoading = ::onFavoriteLoading,
-                    onSuccess = ::successCheckedIsFavorite,
-                    onError = ::errorRequestToDB
-                )
-            }
-        }
-    }
-
-    fun successCheckedIsFavorite(isFavorite: Boolean) {
-        _dBRequestState.update { state ->
-            state.copy(
-                isLoading = false,
-                isFavorite = isFavorite
             )
         }
     }
