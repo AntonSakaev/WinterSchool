@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -16,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.presentation.screens.components.items.BookCard
+import com.example.presentation.components.items.BookCard
 
 @Composable
 fun SearchScreenSuccess(
@@ -44,7 +43,6 @@ fun SearchScreenSuccess(
             })
         { booksIndex ->
             val item = books?.get(booksIndex)
-
             if (item != null) {
                 BookCard(
                     item,

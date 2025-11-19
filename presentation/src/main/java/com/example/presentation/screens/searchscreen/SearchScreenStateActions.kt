@@ -11,8 +11,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
-import com.example.presentation.screens.components.items.ProgressIndicator
-import com.example.presentation.screens.components.screens.ErrorScreen
+import com.example.presentation.components.items.ProgressIndicator
+import com.example.presentation.screens.ErrorScreen
 
 
 @Composable

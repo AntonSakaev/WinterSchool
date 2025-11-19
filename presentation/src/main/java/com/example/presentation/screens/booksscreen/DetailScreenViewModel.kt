@@ -6,8 +6,8 @@ import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
 import com.example.domain.remote.models.Items
 import com.example.domain.remote.usecases.GetSelectedBookUseCase
-import com.example.presentation.screens.searchscreen.FavoriteViewModel
-import com.example.presentation.screens.utils.handle
+import com.example.presentation.screens.FavoriteViewModel
+import com.example.presentation.components.handle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

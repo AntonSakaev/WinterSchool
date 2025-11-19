@@ -1,4 +1,4 @@
-package com.example.presentation.screens.utils
+package com.example.presentation.components
 
 import com.example.domain.remote.utils.OperationResult
 

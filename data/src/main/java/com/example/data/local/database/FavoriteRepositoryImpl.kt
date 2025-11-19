@@ -3,12 +3,9 @@ package com.example.data.local.database
 import com.example.data.local.database.FavoriteMapper.toDomain
 import com.example.data.local.database.FavoriteMapper.toEntity
 import com.example.data.remote.RemoteDataSource
-import com.example.domain.local.db.Favorite
+import com.example.domain.local.db.BookInfo
 import com.example.domain.local.db.FavoriteRepository
-import com.example.domain.remote.models.Books
 import com.example.domain.remote.utils.OperationResult
-import com.example.domain.remote.utils.flatMapIfSuccess
-import com.example.domain.remote.utils.toSuccessResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
@@ -18,15 +15,18 @@ class FavoriteRepositoryImpl @Inject constructor(
     private val favoriteDao: FavoriteDao
 ) : RemoteDataSource(), FavoriteRepository {
 
-    override suspend fun getAllFavorites(): OperationResult<List<Favorite>> {
-        return safeApiCall {
+    override suspend fun getAllFavorites(): Flow<OperationResult<List<BookInfo>>> {
+        return flow {
+            emit(OperationResult.Loading)
+            val responseResult = safeApiCall {
             Response.success(favoriteDao.getAllFavorites().map { it.toDomain() })
         }
+        emit(responseResult)}
     }
 
-    override suspend fun insertFavorite(favorite: Favorite): OperationResult<Unit> {
+    override suspend fun insertFavorite(bookInfo: BookInfo): OperationResult<Unit> {
         return safeApiCall {
-            Response.success(favoriteDao.insertFavorite(favorite.toEntity()))
+            Response.success(favoriteDao.insertFavorite(bookInfo.toEntity()))
         }
     }
 

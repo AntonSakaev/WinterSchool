@@ -23,6 +23,12 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold
     )
 
+val SemiBold_18=TextStyle(
+    fontFamily = FontFamily.Default,
+    fontSize = 18.sp,
+    color = Black,
+    fontWeight = FontWeight.SemiBold
+)
 val Regular_18 = TextStyle(
     fontFamily = FontFamily.Default,
     fontSize = 18.sp,

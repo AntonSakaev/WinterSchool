@@ -45,9 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.Clear
-import com.example.presentation.screens.components.icons.More
-import com.example.presentation.screens.components.items.IconsContainer
+import com.example.presentation.components.icons.Clear
+import com.example.presentation.components.icons.More
+import com.example.presentation.components.items.IconsContainer
 import com.example.presentation.theme.Blue
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Bold_18

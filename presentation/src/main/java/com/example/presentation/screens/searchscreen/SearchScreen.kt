@@ -34,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.Clear
+import com.example.presentation.components.icons.Clear
 import com.example.presentation.theme.Blue
 import com.example.presentation.theme.Regular_12
 

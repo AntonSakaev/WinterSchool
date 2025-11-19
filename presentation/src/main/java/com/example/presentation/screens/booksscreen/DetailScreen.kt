@@ -35,11 +35,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.ArrowBack
-import com.example.presentation.screens.components.items.FavoriteIcon
-import com.example.presentation.screens.components.items.ProgressIndicator
-import com.example.presentation.screens.components.screens.ErrorScreen
-import com.example.presentation.screens.components.showToast
+import com.example.presentation.components.icons.ArrowBack
+import com.example.presentation.components.items.FavoriteIcon
+import com.example.presentation.components.items.ProgressIndicator
+import com.example.presentation.screens.ErrorScreen
+import com.example.presentation.components.showToast
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.Regular_14
@@ -58,6 +58,7 @@ fun DetailScreen(
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
     val dBState by detailScreenViewModel.dBRequestState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val favoriteResults by detailScreenViewModel.favoriteResults.collectAsStateWithLifecycle()
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
@@ -116,9 +117,9 @@ fun DetailScreen(
             )
             {
                 when {
-                    !dBState.isLoading &&  dBState.isFavorite != null -> {
+                    !dBState.isLoading &&  favoriteResults[bookId] != null -> {
                         FavoriteIcon(
-                            isFavorite = dBState.isFavorite == true,
+                            isFavorite = favoriteResults[bookId] == true,
                             onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
                     }
                 }

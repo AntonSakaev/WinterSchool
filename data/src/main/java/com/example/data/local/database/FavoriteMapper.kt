@@ -1,10 +1,10 @@
 package com.example.data.local.database
 
-import com.example.domain.local.db.Favorite
+import com.example.domain.local.db.BookInfo
 
 object FavoriteMapper {
-    fun FavoriteEntity.toDomain(): Favorite {
-        return Favorite(
+    fun FavoriteEntity.toDomain(): BookInfo {
+        return BookInfo(
             filmId = filmId,
             imageUrl = imageUrl,
             authors = authors,
@@ -12,7 +12,7 @@ object FavoriteMapper {
         )
     }
 
-    fun Favorite.toEntity(): FavoriteEntity {
+    fun BookInfo.toEntity(): FavoriteEntity {
         return FavoriteEntity(
             filmId = filmId,
             imageUrl = imageUrl,

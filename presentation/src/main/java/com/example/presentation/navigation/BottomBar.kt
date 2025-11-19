@@ -1,4 +1,4 @@
-package com.example.presentation.screens.bottombar
+package com.example.presentation.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,9 +28,8 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.presentation.R
-import com.example.presentation.navigation.Screens
-import com.example.presentation.screens.components.icons.Favorite
-import com.example.presentation.screens.components.icons.Search
+import com.example.presentation.components.icons.Favorite
+import com.example.presentation.components.icons.Search
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Blue
 

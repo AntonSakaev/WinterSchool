@@ -1,6 +1,5 @@
 package com.example.presentation.screens.searchscreen
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
@@ -10,7 +9,8 @@ import com.example.domain.local.prefs.usecases.GetSearchSettings
 import com.example.domain.local.prefs.usecases.SaveSearchSettings
 import com.example.domain.remote.models.Books
 import com.example.domain.remote.usecases.GetBooksInfoUseCase
-import com.example.presentation.screens.utils.handle
+import com.example.presentation.components.handle
+import com.example.presentation.screens.FavoriteViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Collections.emptyMap
 import javax.inject.Inject
 
 @HiltViewModel

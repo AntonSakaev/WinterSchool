@@ -1,6 +1,5 @@
-package com.example.presentation.screens.components.items
+package com.example.presentation.components.items
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,10 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,13 +26,13 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
-import com.example.presentation.screens.components.showToast
+import com.example.presentation.components.showToast
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    currentBook: Items,
+    currentBook: Items, //Заменить на BookInfo
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
@@ -110,8 +106,4 @@ fun BookCard(
 
 }
 
-data class BookCardState(
-    var isLoading: Boolean = false,
-    val isFavorite: Boolean? = null,
-    var errorMessage: String? = null,
-)
+

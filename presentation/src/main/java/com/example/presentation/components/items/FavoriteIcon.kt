@@ -1,6 +1,5 @@
-package com.example.presentation.screens.components.items
+package com.example.presentation.components.items
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -24,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.Favorite
+import com.example.presentation.components.icons.Favorite
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
 

@@ -1,4 +1,4 @@
-package com.example.presentation.screens.components.icons
+package com.example.presentation.components.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color

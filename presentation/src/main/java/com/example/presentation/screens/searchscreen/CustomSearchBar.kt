@@ -33,10 +33,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
-import com.example.presentation.screens.components.icons.Clear
-import com.example.presentation.screens.components.icons.Options
-import com.example.presentation.screens.components.icons.Search
-import com.example.presentation.screens.components.items.IconsContainer
+import com.example.presentation.components.icons.Clear
+import com.example.presentation.components.icons.Options
+import com.example.presentation.components.icons.Search
+import com.example.presentation.components.items.IconsContainer
 import com.example.presentation.theme.Blue
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Rose

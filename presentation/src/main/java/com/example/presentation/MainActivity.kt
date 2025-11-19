@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.presentation.navigation.NavigationGraph
-import com.example.presentation.screens.bottombar.BottomBar
+import com.example.presentation.navigation.BottomBar
 import com.example.presentation.theme.WinterSchoolTheme
 import dagger.hilt.android.AndroidEntryPoint
 

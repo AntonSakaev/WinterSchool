@@ -1,4 +1,4 @@
-package com.example.presentation.screens.components.items
+package com.example.presentation.components.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
