@@ -10,11 +10,14 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.local.db.BookInfo
+import com.example.presentation.R
 import com.example.presentation.components.items.BookCard
 
 @Composable
@@ -27,7 +30,7 @@ fun SearchScreenSuccess(
         derivedStateOf { state.postBooks?.items }
     }
 
-   val favoriteResults by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
+    val favoriteResults by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -44,8 +47,15 @@ fun SearchScreenSuccess(
         { booksIndex ->
             val item = books?.get(booksIndex)
             if (item != null) {
+                val bookInfo = BookInfo(
+                    bookId = item.id ?:"",
+                    imageUrl = item.volumeInfo?.imageLinks?.thumbnail ?:"",
+                    authors = item.volumeInfo?.authors?.joinToString() ?:"",
+                    bookName = item.volumeInfo?.title ?: stringResource(R.string.no_authors)
+                )
+
                 BookCard(
-                    item,
+                    bookInfo,
                     searchViewModel,
                     onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") }
                 )

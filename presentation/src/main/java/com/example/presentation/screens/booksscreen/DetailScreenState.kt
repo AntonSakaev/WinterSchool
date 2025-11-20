@@ -1,10 +1,10 @@
 package com.example.presentation.screens.booksscreen
 
-import com.example.domain.remote.models.Items
+import com.example.domain.local.db.BookInfo
 
 
 data class DetailScreenState(
-    val selectedBook: Items? = null,
+    val selectedBook: BookInfo? = null,
     val isLoading: Boolean = true,
     val errorMessage: String? = null
 )

@@ -5,7 +5,7 @@ import com.example.domain.local.db.BookInfo
 object FavoriteMapper {
     fun FavoriteEntity.toDomain(): BookInfo {
         return BookInfo(
-            filmId = filmId,
+            bookId = filmId,
             imageUrl = imageUrl,
             authors = authors,
             bookName = bookName
@@ -14,7 +14,7 @@ object FavoriteMapper {
 
     fun BookInfo.toEntity(): FavoriteEntity {
         return FavoriteEntity(
-            filmId = filmId,
+            filmId = bookId,
             imageUrl = imageUrl,
             authors = authors,
             bookName = bookName

@@ -1,10 +1,10 @@
 package com.example.presentation.screens.booksscreen
 
 import androidx.lifecycle.viewModelScope
+import com.example.domain.local.db.BookInfo
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
 import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
-import com.example.domain.remote.models.Items
 import com.example.domain.remote.usecases.GetSelectedBookUseCase
 import com.example.presentation.screens.FavoriteViewModel
 import com.example.presentation.components.handle
@@ -62,8 +62,8 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
-    private fun onSuccess(selectedBook: Items) {
-        checkThisForFavorite(selectedBook.id ?: "")
+    private fun onSuccess(selectedBook: BookInfo) {
+        checkThisForFavorite(selectedBook.bookId)
         _uiState.update { state ->
             state.copy(
                 isLoading = false,

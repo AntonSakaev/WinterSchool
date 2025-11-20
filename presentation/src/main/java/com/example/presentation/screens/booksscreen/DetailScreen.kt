@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.domain.local.db.BookInfo
 import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.components.icons.ArrowBack
@@ -62,19 +63,19 @@ fun DetailScreen(
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
-            detailScreenViewModel.deleteFavorite(state.selectedBook?.id ?: "")
+            detailScreenViewModel.deleteFavorite(state.selectedBook?.bookId ?:"")
             context.showToast(
                 state.errorMessage
                     ?: context.getString(R.string.book_delete_sucsess)
             )
         } else {
             detailScreenViewModel.addFavorite(
-                bookId = state.selectedBook?.id ?: "",
-                thumbnail = state.selectedBook?.volumeInfo?.imageLinks?.thumbnail
+                bookId = state.selectedBook?.bookId ?: "",
+                thumbnail = state.selectedBook?.imageUrl
                     ?: "",
-                authors = state.selectedBook?.volumeInfo?.authors?.joinToString()
+                authors = state.selectedBook?.authors
                     ?: "",
-                title = state.selectedBook?.volumeInfo?.title ?: ""
+                title = state.selectedBook?.bookName ?: ""
             )
             context.showToast(
                 state.errorMessage
@@ -138,7 +139,7 @@ fun DetailScreen(
                 )
             }
             else -> {
-                BookInfo(state.selectedBook)
+                BookCard(state.selectedBook)
             }
         }
     }
@@ -147,10 +148,10 @@ fun DetailScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun BookInfo(selectedBook: Items?) {
-    val bookInfo = selectedBook?.volumeInfo
+fun BookCard(selectedBook: BookInfo?) {
+
     GlideImage(
-        model = bookInfo?.imageLinks?.thumbnail,
+        model = selectedBook?.imageUrl,
         contentDescription = stringResource(R.string.book_image),
         modifier = Modifier
             .height(300.dp)
@@ -160,14 +161,14 @@ fun BookInfo(selectedBook: Items?) {
         contentScale = ContentScale.FillBounds
     )
     Text(
-        text = bookInfo?.authors?.joinToString() ?: "",
+        text = selectedBook?.authors ?: "",
         modifier = Modifier
             .padding(top = 14.dp)
             .padding(horizontal = 24.dp),
         style = Regular_16.copy(color = Gray),
     )
     Text(
-        text = bookInfo?.title ?: "",
+        text = selectedBook?.bookName ?: "",
         modifier = Modifier
             .padding(top = 8.dp)
             .padding(horizontal = 24.dp),

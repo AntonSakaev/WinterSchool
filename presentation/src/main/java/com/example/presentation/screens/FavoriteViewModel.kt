@@ -27,7 +27,7 @@ abstract class FavoriteViewModel(
 
     fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
         val bookInfo = BookInfo(
-            filmId = bookId,
+            bookId = bookId,
             imageUrl = thumbnail,
             authors = authors,
             bookName = title

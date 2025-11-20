@@ -19,12 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.domain.remote.models.Items
+import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
 import com.example.presentation.components.showToast
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
@@ -32,31 +31,29 @@ import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    currentBook: Items, //Заменить на BookInfo
+    currentBook: BookInfo, //Заменить на BookInfo
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
-    val currentBookInfo = currentBook.volumeInfo
+    //  val currentBookInfo = currentBook.volumeInfo
     val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
-    val isFavorite by rememberUpdatedState (favoritesBooks[currentBook.id])
+    val isFavorite by rememberUpdatedState(favoritesBooks[currentBook.bookId])
 
     fun onFavoriteIconClick(isPressed: Boolean) {
         if (isPressed) {
-            searchViewModel.deleteFavorite(currentBook.id ?: "")
+            searchViewModel.deleteFavorite(currentBook.bookId)
             context.showToast(
                 dbState.errorMessage
                     ?: context.getString(R.string.book_delete_sucsess)
             )
         } else {
             searchViewModel.addFavorite(
-                bookId = currentBook.id ?: "",
-                thumbnail = currentBookInfo?.imageLinks?.thumbnail
-                    ?: "",
-                authors = currentBookInfo?.authors?.joinToString()
-                    ?: "",
-                title = currentBookInfo?.title ?: ""
+                bookId = currentBook.bookId,
+                thumbnail = currentBook.imageUrl,
+                authors = currentBook.authors,
+                title = currentBook.bookName
             )
             context.showToast(
                 dbState.errorMessage
@@ -78,7 +75,7 @@ fun BookCard(
         Box {
             GlideImage(
                 contentScale = ContentScale.Crop,
-                model = currentBook.volumeInfo?.imageLinks?.thumbnail,
+                model = currentBook.imageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
@@ -97,11 +94,10 @@ fun BookCard(
             }
         }
         Text(
-            text = currentBook.volumeInfo?.authors?.firstOrNull()
-                ?: stringResource(R.string.no_authors),
+            text = currentBook.authors.substringBefore(","),
             color = Color.Gray
         )
-        Text(text = currentBook.volumeInfo?.title ?: "")
+        Text(text = currentBook.bookName)
     }
 
 }
