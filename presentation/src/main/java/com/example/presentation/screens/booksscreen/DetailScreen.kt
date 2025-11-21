@@ -61,28 +61,21 @@ fun DetailScreen(
     val context = LocalContext.current
     val favoriteResults by detailScreenViewModel.favoriteResults.collectAsStateWithLifecycle()
 
-    fun onFavoriteIconClick(isPressed: Boolean) {
-        if (isPressed) {
-            detailScreenViewModel.deleteFavorite(state.selectedBook?.bookId ?:"")
-            context.showToast(
-                state.errorMessage
-                    ?: context.getString(R.string.book_delete_sucsess)
-            )
-        } else {
-            detailScreenViewModel.addFavorite(
-                bookId = state.selectedBook?.bookId ?: "",
-                thumbnail = state.selectedBook?.imageUrl
-                    ?: "",
-                authors = state.selectedBook?.authors
-                    ?: "",
-                title = state.selectedBook?.bookName ?: ""
-            )
-            context.showToast(
-                state.errorMessage
-                    ?: context.getString(R.string.add_book_sucsess)
-            )
-        }
-    }
+//    fun onFavoriteIconClick(isPressed: Boolean) {
+//        if (isPressed) {
+//            detailScreenViewModel.deleteFavorite(state.selectedBook?.bookId ?: "")
+//            context.showToast(
+//                state.errorMessage
+//                    ?: context.getString(R.string.book_delete_sucsess)
+//            )
+//        } else {
+//            detailScreenViewModel.addFavorite(state.selectedBook ?: BookInfo())
+//            context.showToast(
+//                state.errorMessage
+//                    ?: context.getString(R.string.add_book_sucsess)
+//            )
+//        }
+//    }
 
     LaunchedEffect(bookId) {
         detailScreenViewModel.getSelectedBook(bookId)
@@ -106,7 +99,7 @@ fun DetailScreen(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .clickable {
-                          onExitClick()
+                        onExitClick()
                     })
             Card(
                 modifier = Modifier
@@ -118,10 +111,10 @@ fun DetailScreen(
             )
             {
                 when {
-                    !dBState.isLoading &&  favoriteResults[bookId] != null -> {
+                    !dBState.isLoading && favoriteResults[bookId] != null -> {
                         FavoriteIcon(
                             isFavorite = favoriteResults[bookId] == true,
-                            onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
+                          //  onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
                     }
                 }
             }
@@ -138,6 +131,7 @@ fun DetailScreen(
                     }
                 )
             }
+
             else -> {
                 BookCard(state.selectedBook)
             }
@@ -175,7 +169,7 @@ fun BookCard(selectedBook: BookInfo?) {
         style = Bold_16,
     )
     Text(
-        text = bookInfo?.publishedDate ?: "",
+        text = selectedBook?.publishedDate ?: "",
         modifier = Modifier.padding(top = 8.dp),
         style = Regular_14.copy(color = Gray)
     )
@@ -200,7 +194,7 @@ fun BookCard(selectedBook: BookInfo?) {
             )
             Text(
                 modifier = Modifier.padding(top = 16.dp),
-                text = bookInfo?.description ?: "",
+                text = selectedBook?.description ?: "",
                 style = Regular_14,
                 lineHeight = 20.sp
             )

@@ -31,13 +31,12 @@ import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    currentBook: BookInfo, //Заменить на BookInfo
+    currentBook: BookInfo, 
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
     val context = LocalContext.current
     val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
-    //  val currentBookInfo = currentBook.volumeInfo
     val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
     val isFavorite by rememberUpdatedState(favoritesBooks[currentBook.bookId])
 
@@ -49,12 +48,7 @@ fun BookCard(
                     ?: context.getString(R.string.book_delete_sucsess)
             )
         } else {
-            searchViewModel.addFavorite(
-                bookId = currentBook.bookId,
-                thumbnail = currentBook.imageUrl,
-                authors = currentBook.authors,
-                title = currentBook.bookName
-            )
+            searchViewModel.addFavorite(currentBook)
             context.showToast(
                 dbState.errorMessage
                     ?: context.getString(R.string.add_book_sucsess)

@@ -25,17 +25,11 @@ abstract class FavoriteViewModel(
     protected val _favoriteResults = MutableStateFlow<MutableMap<String?, Boolean?>>(mutableMapOf())
     val favoriteResults = _favoriteResults.asStateFlow()
 
-    fun addFavorite(bookId: String, thumbnail: String, authors: String, title: String) {
-        val bookInfo = BookInfo(
-            bookId = bookId,
-            imageUrl = thumbnail,
-            authors = authors,
-            bookName = title
-        )
+    fun addFavorite(bookInfo: BookInfo) {
         viewModelScope.launch {
             addFavoriteUseCase(bookInfo).handle(
                 onSuccess = {
-                    checkThisForFavorite(bookId)
+                    checkThisForFavorite(bookInfo.bookId)
                     onSuccessRequestToDB()
                 },
                 onError = ::onErrorRequestToDB,
