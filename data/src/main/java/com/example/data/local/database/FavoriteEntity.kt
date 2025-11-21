@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 data class FavoriteEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Int = 0,
-    @ColumnInfo(name = "book_id") val filmId: String,
-    @ColumnInfo(name = "image_url") val imageUrl: String,
-    @ColumnInfo(name = "authors") val authors: String,
-    @ColumnInfo(name = "book_name") val bookName: String
+    @ColumnInfo(name = "book_id") val filmId: String? = null,
+    @ColumnInfo(name = "image_url") val imageUrl: String?= null,
+    @ColumnInfo(name = "authors") val authors: String?= null,
+    @ColumnInfo(name = "book_name") val bookName: String?= null
 )

@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,13 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.local.db.BookInfo
-import com.example.domain.remote.models.Items
 import com.example.presentation.R
 import com.example.presentation.components.icons.ArrowBack
 import com.example.presentation.components.items.FavoriteIcon
 import com.example.presentation.components.items.ProgressIndicator
 import com.example.presentation.screens.ErrorScreen
-import com.example.presentation.components.showToast
 import com.example.presentation.theme.Bold_16
 import com.example.presentation.theme.Gray
 import com.example.presentation.theme.Regular_14
@@ -58,24 +55,7 @@ fun DetailScreen(
 
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
     val dBState by detailScreenViewModel.dBRequestState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val favoriteResults by detailScreenViewModel.favoriteResults.collectAsStateWithLifecycle()
-
-//    fun onFavoriteIconClick(isPressed: Boolean) {
-//        if (isPressed) {
-//            detailScreenViewModel.deleteFavorite(state.selectedBook?.bookId ?: "")
-//            context.showToast(
-//                state.errorMessage
-//                    ?: context.getString(R.string.book_delete_sucsess)
-//            )
-//        } else {
-//            detailScreenViewModel.addFavorite(state.selectedBook ?: BookInfo())
-//            context.showToast(
-//                state.errorMessage
-//                    ?: context.getString(R.string.add_book_sucsess)
-//            )
-//        }
-//    }
 
     LaunchedEffect(bookId) {
         detailScreenViewModel.getSelectedBook(bookId)
@@ -114,7 +94,10 @@ fun DetailScreen(
                     !dBState.isLoading && favoriteResults[bookId] != null -> {
                         FavoriteIcon(
                             isFavorite = favoriteResults[bookId] == true,
-                          //  onImageClick = { isPressed -> onFavoriteIconClick(isPressed) })
+                            bookInfo = state.selectedBook ?: BookInfo(),
+                            ifError = state.errorMessage,
+                            viewModel = detailScreenViewModel
+                        )
                     }
                 }
             }
@@ -133,7 +116,7 @@ fun DetailScreen(
             }
 
             else -> {
-                BookCard(state.selectedBook)
+                DetailBookCard(state.selectedBook)
             }
         }
     }
@@ -142,8 +125,7 @@ fun DetailScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun BookCard(selectedBook: BookInfo?) {
-
+fun DetailBookCard(selectedBook: BookInfo?) {
     GlideImage(
         model = selectedBook?.imageUrl,
         contentDescription = stringResource(R.string.book_image),
@@ -194,7 +176,7 @@ fun BookCard(selectedBook: BookInfo?) {
             )
             Text(
                 modifier = Modifier.padding(top = 16.dp),
-                text = selectedBook?.description ?: "",
+                text = selectedBook?.description ?: stringResource(R.string.description_is_missing),
                 style = Regular_14,
                 lineHeight = 20.sp
             )

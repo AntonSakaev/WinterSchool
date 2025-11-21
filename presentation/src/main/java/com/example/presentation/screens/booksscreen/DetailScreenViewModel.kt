@@ -63,7 +63,7 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     private fun onSuccess(selectedBook: BookInfo) {
-        checkThisForFavorite(selectedBook.bookId)
+        checkThisForFavorite(selectedBook.bookId.toString())
         _uiState.update { state ->
             state.copy(
                 isLoading = false,

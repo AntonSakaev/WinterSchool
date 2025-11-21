@@ -1,5 +1,6 @@
 package com.example.presentation.components.items
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
@@ -20,20 +21,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
 import com.example.presentation.components.icons.Favorite
+import com.example.presentation.components.showToast
+import com.example.presentation.screens.FavoriteViewModel
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
 
 @Composable
 fun FavoriteIcon(
     isFavorite: Boolean,
-    onImageClick: (isPressed: Boolean) -> Unit
+    bookInfo: BookInfo,
+    ifError: String?,
+    viewModel: FavoriteViewModel
 ) {
     var isPressed by remember { mutableStateOf(isFavorite) }
-
+    val context = LocalContext.current
+    fun onImageClick(isPressed: Boolean) {
+        if (isPressed) {
+            viewModel.deleteFavorite(bookInfo.bookId.toString())
+            context.showToast(
+                ifError
+                    ?: context.getString(R.string.book_delete_sucsess)
+            )
+        } else {
+            viewModel.addFavorite(bookInfo)
+            context.showToast(
+                ifError
+                    ?: context.getString(R.string.add_book_sucsess)
+            )
+        }
+        Log.d("ERROR", "onImageClick:$ifError ")
+    }
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,
         animationSpec = if (isPressed) {

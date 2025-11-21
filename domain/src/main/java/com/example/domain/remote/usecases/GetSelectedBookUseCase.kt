@@ -19,7 +19,9 @@ class GetSelectedBookUseCase @Inject constructor(
                         bookId = item.id ?: "",
                         imageUrl = item.volumeInfo?.imageLinks?.thumbnail ?: "",
                         authors = item.volumeInfo?.authors?.joinToString() ?: "",
-                        bookName = item.volumeInfo?.title ?: ""
+                        bookName = item.volumeInfo?.title ?: "",
+                        publishedDate = item.volumeInfo?.publishedDate,
+                        description = item.volumeInfo?.description
                     )
                 }
             }

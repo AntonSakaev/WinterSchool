@@ -29,7 +29,7 @@ abstract class FavoriteViewModel(
         viewModelScope.launch {
             addFavoriteUseCase(bookInfo).handle(
                 onSuccess = {
-                    checkThisForFavorite(bookInfo.bookId)
+                    checkThisForFavorite(bookInfo.bookId.toString())
                     onSuccessRequestToDB()
                 },
                 onError = ::onErrorRequestToDB,

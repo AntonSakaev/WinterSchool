@@ -23,4 +23,6 @@
     <string name="description">Описание</string>
     <string name="book_delete_sucsess">Книга успешно удалена из избранного</string>
     <string name="add_book_sucsess">Книга успешно добавлена в избранное</string>
+    <string name="description_is_missing">Описание отсутствует</string>
+    <string name="without_name">Без названия</string>
 </resources>

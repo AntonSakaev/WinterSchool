@@ -1,5 +1,6 @@
 package com.example.presentation.components.items
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,44 +19,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
-import com.example.presentation.components.showToast
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
-    currentBook: BookInfo, 
+    currentBook: BookInfo,
     searchViewModel: SearchScreenViewModel,
     onImageClick: () -> Unit
 ) {
-    val context = LocalContext.current
+
     val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
     val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
     val isFavorite by rememberUpdatedState(favoritesBooks[currentBook.bookId])
-
-    fun onFavoriteIconClick(isPressed: Boolean) {
-        if (isPressed) {
-            searchViewModel.deleteFavorite(currentBook.bookId)
-            context.showToast(
-                dbState.errorMessage
-                    ?: context.getString(R.string.book_delete_sucsess)
-            )
-        } else {
-            searchViewModel.addFavorite(currentBook)
-            context.showToast(
-                dbState.errorMessage
-                    ?: context.getString(R.string.add_book_sucsess)
-            )
-        }
-    }
-
+    Log.d("CURRENTBOOK", "BookCard: $currentBook")
     Column(
         modifier = Modifier
             .height(290.dp)
@@ -83,17 +67,20 @@ fun BookCard(
             ) {
                 FavoriteIcon(
                     isFavorite = isFavorite == true,
-                    onImageClick = { isPressed -> onFavoriteIconClick(isPressed = isPressed) }
+                    currentBook,
+                    dbState.errorMessage,
+                    searchViewModel
                 )
             }
         }
         Text(
-            text = currentBook.authors.substringBefore(","),
-            color = Color.Gray
+            text = currentBook.authors?.takeIf { it.isNotBlank() }?.substringBefore(",")
+                ?: stringResource(R.string.no_authors),
+            color = Color.Gray,
+            maxLines = 1
         )
-        Text(text = currentBook.bookName)
+        Text(text = currentBook.bookName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.without_name))
     }
-
 }
 
 
