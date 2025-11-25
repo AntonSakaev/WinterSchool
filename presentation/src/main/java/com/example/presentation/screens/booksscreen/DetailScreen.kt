@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +51,8 @@ fun DetailScreen(
     innerPaddingValues: PaddingValues,
     bookId: String,
     detailScreenViewModel: DetailScreenViewModel,
-    onExitClick: () -> Unit
+    onExitClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
 
     val state by detailScreenViewModel.uiState.collectAsStateWithLifecycle()
@@ -96,7 +98,8 @@ fun DetailScreen(
                             isFavorite = favoriteResults[bookId] == true,
                             bookInfo = state.selectedBook ?: BookInfo(),
                             ifError = state.errorMessage,
-                            viewModel = detailScreenViewModel
+                            viewModel = detailScreenViewModel,
+                            snackbarHostState = snackbarHostState
                         )
                     }
                 }

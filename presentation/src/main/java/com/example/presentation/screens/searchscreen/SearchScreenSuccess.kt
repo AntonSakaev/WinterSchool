@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -23,7 +24,8 @@ import com.example.presentation.components.items.BookCard
 @Composable
 fun SearchScreenSuccess(
     searchViewModel: SearchScreenViewModel,
-    onDetailClick: (selectedBookID: String) -> Unit
+    onDetailClick: (selectedBookID: String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
     val books by remember(state.postBooks?.items) {
@@ -57,7 +59,8 @@ fun SearchScreenSuccess(
                 BookCard(
                     bookInfo,
                     searchViewModel,
-                    onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") }
+                    onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") },
+                    snackbarHostState
                 )
             }
         }

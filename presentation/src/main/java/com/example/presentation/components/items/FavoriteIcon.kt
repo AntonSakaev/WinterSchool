@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,31 +33,38 @@ import com.example.presentation.components.showToast
 import com.example.presentation.screens.FavoriteViewModel
 import com.example.presentation.theme.LightGray
 import com.example.presentation.theme.Red
+import kotlinx.coroutines.launch
 
 @Composable
 fun FavoriteIcon(
     isFavorite: Boolean,
     bookInfo: BookInfo,
     ifError: String?,
-    viewModel: FavoriteViewModel
+    viewModel: FavoriteViewModel,
+    snackbarHostState: SnackbarHostState
 ) {
     var isPressed by remember { mutableStateOf(isFavorite) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     fun onImageClick(isPressed: Boolean) {
-        if (isPressed) {
-            viewModel.deleteFavorite(bookInfo.bookId.toString())
-            context.showToast(
-                ifError
-                    ?: context.getString(R.string.book_delete_sucsess)
-            )
-        } else {
-            viewModel.addFavorite(bookInfo)
-            context.showToast(
-                ifError
-                    ?: context.getString(R.string.add_book_sucsess)
-            )
+        scope.launch {
+            snackbarHostState.showSnackbar("Snackbar")
         }
-        Log.d("ERROR", "onImageClick:$ifError ")
+//        if (isPressed) {
+//            viewModel.deleteFavorite(bookInfo.bookId.toString())
+//            context.showToast(
+//                ifError
+//                    ?: context.getString(R.string.book_delete_sucsess)
+//            )
+//        } else {
+//            viewModel.addFavorite(bookInfo)
+//            context.showToast(
+//                ifError
+//                    ?: context.getString(R.string.add_book_sucsess)
+//            )
+//        }
+//        Log.d("ERROR", "onImageClick:$ifError ")
     }
     val pressScale by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0.9f,

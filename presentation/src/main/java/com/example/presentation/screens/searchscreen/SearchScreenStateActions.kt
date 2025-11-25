@@ -2,6 +2,7 @@ package com.example.presentation.screens.searchscreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +19,8 @@ import com.example.presentation.screens.ErrorScreen
 @Composable
 fun SearchScreenStateActions(
     searchViewModel: SearchScreenViewModel,
-    onDetailClick:(selectedBbookID: String)-> Unit
+    onDetailClick: (selectedBbookID: String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     val state by searchViewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -45,7 +47,7 @@ fun SearchScreenStateActions(
         }
 
         else -> {
-            SearchScreenSuccess(searchViewModel, onDetailClick = { onDetailClick(it) })
+            SearchScreenSuccess(searchViewModel, onDetailClick = { onDetailClick(it) },snackbarHostState)
         }
     }
 }

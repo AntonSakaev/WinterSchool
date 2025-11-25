@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,10 +44,11 @@ fun SearchScreen(
     searchViewModel: SearchScreenViewModel,
     innerPaddingValues: PaddingValues,
     onSettingsClick: () -> Unit,
-    onDetailClick:(selectedBookID: String)-> Unit
+    onDetailClick: (selectedBookID: String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     val searchSettings by searchViewModel.searchParams.collectAsState()
-   val isSettingsEnabled by remember { derivedStateOf {  searchSettings.isEnabled()} }
+    val isSettingsEnabled by remember { derivedStateOf { searchSettings.isEnabled() } }
 
 
     LaunchedEffect(true) {
@@ -68,15 +70,17 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
         DisplaySettings(searchViewModel, searchSettings)
-        SearchScreenStateActions(searchViewModel, { onDetailClick(it)
-         })
+        SearchScreenStateActions(
+            searchViewModel = searchViewModel,
+            onDetailClick = {            onDetailClick(it)        },
+            snackbarHostState)
     }
 
 }
 
 @Composable
 fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: SearchSettings) {
-   LazyVerticalGrid(
+    LazyVerticalGrid(
         modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(8.dp),

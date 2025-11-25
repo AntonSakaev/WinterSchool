@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +34,8 @@ import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 fun BookCard(
     currentBook: BookInfo,
     searchViewModel: SearchScreenViewModel,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
 
     val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
@@ -69,7 +71,8 @@ fun BookCard(
                     isFavorite = isFavorite == true,
                     currentBook,
                     dbState.errorMessage,
-                    searchViewModel
+                    searchViewModel,
+                    snackbarHostState
                 )
             }
         }

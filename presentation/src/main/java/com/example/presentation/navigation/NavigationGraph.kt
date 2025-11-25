@@ -1,6 +1,7 @@
 package com.example.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,7 +17,8 @@ import com.example.presentation.screens.searchscreen.Settings
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    snackbarHostState: SnackbarHostState
 ) {
 
     val searchViewModel: SearchScreenViewModel = hiltViewModel()
@@ -30,7 +32,8 @@ fun NavigationGraph(
                 searchViewModel = searchViewModel,
                 innerPaddingValues = innerPadding,
                 onSettingsClick = { navigationAction.toSettingsScreen() },
-                onDetailClick = { navigationAction.toDetailScreen(it) }
+                onDetailClick = { navigationAction.toDetailScreen(it) },
+                snackbarHostState
             )
         }
 
@@ -44,7 +47,8 @@ fun NavigationGraph(
                 innerPaddingValues = innerPadding,
                 bookId = bookId,
                 detailScreenViewModel = detailScreenViewModel,
-                onExitClick = { navigationAction.backClick() }
+                onExitClick = { navigationAction.backClick() },
+                snackbarHostState
             )
 
         }
