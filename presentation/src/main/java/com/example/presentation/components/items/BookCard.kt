@@ -69,10 +69,10 @@ fun BookCard(
             ) {
                 FavoriteIcon(
                     isFavorite = isFavorite == true,
-                    currentBook,
-                    dbState.errorMessage,
-                    searchViewModel,
-                    snackbarHostState
+                    bookInfo = currentBook,
+                    ifError = dbState.errorMessage,
+                    viewModel = searchViewModel,
+                    snackbarHostState = snackbarHostState
                 )
             }
         }
