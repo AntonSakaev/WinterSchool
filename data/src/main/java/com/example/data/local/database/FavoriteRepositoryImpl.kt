@@ -33,13 +33,9 @@ class FavoriteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isFavorite(bookId: String): Flow<OperationResult<Boolean>> {
-        return flow {
-            emit(OperationResult.Loading)
-            val responseResult = safeDatabaseOperation {
+        return safeFlowDatabaseOperation {
                 favoriteDao.isFavorite(bookId)
             }
-            emit(responseResult)
-        }
     }
 }
 

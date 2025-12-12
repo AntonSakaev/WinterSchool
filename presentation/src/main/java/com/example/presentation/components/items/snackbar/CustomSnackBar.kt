@@ -2,6 +2,7 @@ package com.example.presentation.components.items.snackbar
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
@@ -22,10 +23,12 @@ fun CustomSnackbar(
     Snackbar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(96.dp)
             .clip(RoundedCornerShape(12.dp)),
+        shape = RoundedCornerShape(12.dp),
         snackbarData = data,
-        containerColor = if (isError) Red else Blue
+        containerColor = if (isError) Red else Blue,
+        actionOnNewLine = true
     )
 }
 

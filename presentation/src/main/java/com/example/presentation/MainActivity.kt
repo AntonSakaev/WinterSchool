@@ -38,7 +38,8 @@ class MainActivity : ComponentActivity() {
             HideSystemBars()
             WinterSchoolTheme {
                 Scaffold(
-                    snackbarHost = { SnackbarHost(hostState = snackbarHostState)
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState)
                         { data ->
                             CustomSnackbar(data = data)
                         }
