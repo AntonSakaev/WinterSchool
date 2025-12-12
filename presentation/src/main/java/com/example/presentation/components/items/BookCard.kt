@@ -1,6 +1,5 @@
 package com.example.presentation.components.items
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,21 +25,20 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
-import com.example.presentation.screens.searchscreen.SearchScreenViewModel
+import com.example.presentation.screens.FavoriteViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BookCard(
     currentBook: BookInfo,
-    searchViewModel: SearchScreenViewModel,
+    searchViewModel: FavoriteViewModel,
     onImageClick: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    isFavorite: Boolean
 ) {
 
     val dbState by searchViewModel.dBRequestState.collectAsStateWithLifecycle()
-    val favoritesBooks by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
-    val isFavorite by rememberUpdatedState(favoritesBooks[currentBook.bookId])
-    Log.d("CURRENTBOOK", "BookCard: $currentBook")
+
     Column(
         modifier = Modifier
             .height(290.dp)
@@ -68,7 +65,7 @@ fun BookCard(
                     .align(Alignment.TopEnd)
             ) {
                 FavoriteIcon(
-                    isFavorite = isFavorite == true,
+                    isFavorite = isFavorite,
                     bookInfo = currentBook,
                     ifError = dbState.errorMessage,
                     viewModel = searchViewModel,

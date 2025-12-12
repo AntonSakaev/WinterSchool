@@ -19,7 +19,7 @@ abstract class FavoriteViewModel(
     private val checkIsFavoriteUseCase: CheckIsFavoriteUseCase
 ) : ViewModel() {
 
-    protected val _dBRequestState = MutableStateFlow(dBState())
+    protected val _dBRequestState = MutableStateFlow(DBState())
     val dBRequestState = _dBRequestState.asStateFlow()
 
     protected val _favoriteResults = MutableStateFlow<MutableMap<String?, Boolean?>>(mutableMapOf())
@@ -100,7 +100,7 @@ abstract class FavoriteViewModel(
     }
 }
 
-data class dBState(
+data class DBState(
     var isLoading: Boolean = false,
     var errorMessage: String? = null,
 )

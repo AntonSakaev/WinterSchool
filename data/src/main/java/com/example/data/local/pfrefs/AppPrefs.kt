@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "SearchSettings")
 
-class AppPrefs(private val context: Context) {
+class AppPrefs(context: Context) {
     private val dataStore = context.dataStore
 
     suspend fun saveSearchSettings(params: SearchSettingsEntity) {

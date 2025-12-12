@@ -34,6 +34,7 @@ fun SearchScreenSuccess(
 
     val favoriteResults by searchViewModel.favoriteResults.collectAsStateWithLifecycle()
 
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize(),
@@ -57,10 +58,11 @@ fun SearchScreenSuccess(
                 )
 
                 BookCard(
-                    bookInfo,
-                    searchViewModel,
+                    currentBook = bookInfo,
+                    searchViewModel = searchViewModel,
                     onImageClick = { onDetailClick(books?.get(booksIndex)?.id ?: "") },
-                    snackbarHostState
+                    snackbarHostState = snackbarHostState,
+                    isFavorite = favoriteResults[item.id] == true
                 )
             }
         }

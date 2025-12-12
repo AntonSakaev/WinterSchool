@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
 import com.example.presentation.components.icons.Favorite
-import com.example.presentation.components.items.snackbar.CustomSnackbarVisuals
 import com.example.presentation.components.items.snackbar.LaunchSnackBar
 import com.example.presentation.components.items.snackbar.SnackbarViewEvent
 import com.example.presentation.screens.FavoriteViewModel

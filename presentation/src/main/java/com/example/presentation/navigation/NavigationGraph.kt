@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.presentation.screens.booksscreen.DetailScreen
 import com.example.presentation.screens.booksscreen.DetailScreenViewModel
+import com.example.presentation.screens.favoritescreen.FavoriteScreen
+import com.example.presentation.screens.favoritescreen.FavoriteScreenViewModel
 import com.example.presentation.screens.searchscreen.SearchScreen
 import com.example.presentation.screens.searchscreen.SearchScreenViewModel
 import com.example.presentation.screens.searchscreen.Settings
@@ -23,6 +25,7 @@ fun NavigationGraph(
 
     val searchViewModel: SearchScreenViewModel = hiltViewModel()
     val detailScreenViewModel: DetailScreenViewModel = hiltViewModel()
+    val favoriteScreenViewModel: FavoriteScreenViewModel = hiltViewModel()
     val navigationAction = NavigationAction(navController)
 
     NavHost(navController, startDestination = Screens.SearchScreen) {
@@ -38,7 +41,13 @@ fun NavigationGraph(
         }
 
         composable<Screens.FavoriteScreen> {
-
+            FavoriteScreen(
+                innerPaddingValues = innerPadding,
+                favoriteScreenViewModel = favoriteScreenViewModel,
+                onExitClick = { navigationAction.backClick()},
+                onDetailClick = { navigationAction.toDetailScreen(it) },
+                snackbarHostState = snackbarHostState
+            )
         }
 
         composable<Screens.DetailScreen> { backStackEntry ->

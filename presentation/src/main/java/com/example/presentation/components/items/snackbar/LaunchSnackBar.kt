@@ -4,7 +4,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun LaunchSnackBar(
@@ -19,7 +18,7 @@ fun LaunchSnackBar(
                 actionLabel = null,
                 duration = SnackbarDuration.Short,
                 message = message,
-                withDismissAction = false,
+                withDismissAction = true,
                 isError = isError
             )
         )

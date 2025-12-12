@@ -8,12 +8,14 @@ import com.example.domain.local.db.usecases.DeleteFavoriteUseCase
 import com.example.domain.local.db.usecases.GetFavoritesUseCase
 import com.example.presentation.components.handle
 import com.example.presentation.screens.FavoriteViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class FavoriteScreenViewModel @Inject constructor(
     private val getFavoritesUseCase: GetFavoritesUseCase,
     checkIsFavoriteUseCase: CheckIsFavoriteUseCase,
@@ -27,8 +29,8 @@ class FavoriteScreenViewModel @Inject constructor(
     private val _favoritesBooks = MutableStateFlow<List<BookInfo>>(emptyList())
     val favoritesBooks = _favoritesBooks.asStateFlow()
 
-    fun getAllFavoritesBook() {
-        viewModelScope.launch(Dispatchers.IO) {
+  init {
+     viewModelScope.launch(Dispatchers.IO) {
             getFavoritesUseCase().collect {
                 it.handle(
                     onLoading = ::onFavoriteLoading,
@@ -40,5 +42,5 @@ class FavoriteScreenViewModel @Inject constructor(
                 )
             }
         }
-    }
+}
 }
