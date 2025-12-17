@@ -15,7 +15,7 @@ fun LaunchSnackBar(
     LaunchedEffect(key) {
         snackbarHostState.showSnackbar(
             visuals = CustomSnackbarVisuals(
-                actionLabel = null,
+                actionLabel = "",
                 duration = SnackbarDuration.Short,
                 message = message,
                 withDismissAction = true,
