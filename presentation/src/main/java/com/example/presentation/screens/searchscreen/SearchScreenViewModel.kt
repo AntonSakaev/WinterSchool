@@ -49,29 +49,57 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchParams = MutableStateFlow(SearchSettings())
     val searchParams = _searchParams.asStateFlow()
 
+    private var currentPage = 0
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             keyText.collectLatest { keyword ->
                 lastKnowKeyword.value = keyword
-                launchSearch(keyword)
+                launchSearch(
+                    keyword = keyword,
+                    author = _searchParams.value.authorName,
+                    sortByDate = _searchParams.value.sortByDate,
+                    sortByRelevance = _searchParams.value.bestMatch,
+                    loadMore = true
+                )
             }
         }
     }
 
     fun keywordInput(keyword: String) {
         _keyText.value = keyword
+        if (keyword == _keyText.value)
+            refresh()
     }
 
-    private suspend fun launchSearch(keyword: String) {
+    private suspend fun launchSearch(
+        keyword: String, author: String?,
+        sortByDate: Boolean?,
+        sortByRelevance: Boolean?,
+        loadMore: Boolean = false
+    ) {
         _favoriteResults.value.clear()
         if (keyword.isNotEmpty()) {
-            getBooksInfoUseCase(keyword).collect {
+            val page = if (loadMore) currentPage else 0
+            getBooksInfoUseCase(
+                request = keyword,
+                author = author,
+                sortByDate = sortByDate,
+                sortByRelevance = sortByRelevance,
+                page = page
+            ).collect {
                 it.handle(
                     onSuccess = ::onSuccess,
                     onLoading = ::onLoading,
                     onError = ::onError
                 )
+                if (!loadMore) {
+                currentPage = 0
+            } else {
+                currentPage++
             }
+            }
+
         } else {
             emptyKeyword()
         }
@@ -79,7 +107,13 @@ class SearchScreenViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
-            launchSearch(lastKnowKeyword.value)
+            launchSearch(
+                lastKnowKeyword.value,
+                author = _searchParams.value.authorName,
+                sortByDate = _searchParams.value.sortByDate,
+                sortByRelevance = _searchParams.value.bestMatch,
+                loadMore = false
+            )
         }
     }
 
@@ -108,10 +142,11 @@ class SearchScreenViewModel @Inject constructor(
         _favoriteResults.value.clear()
         val listIds = postBooks.items.map { it.id }
         for (bookId in listIds) {
-        _favoriteResults.update { currentList ->
-            currentList.apply { put(bookId, null) }
+            _favoriteResults.update { currentList ->
+                currentList.apply { put(bookId, null) }
+            }
+            checkThisForFavorite(bookId ?: "")
         }
-        checkThisForFavorite(bookId ?:"")}
         _uiState.update { state ->
             state.copy(
                 isLoading = false,
@@ -132,7 +167,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-     //region Работа с настройками поиска
+    //region Работа с настройками поиска
     fun saveSearchSettings(
         authorName: String,
         sortByDate: Boolean,

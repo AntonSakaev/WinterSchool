@@ -160,7 +160,7 @@ fun Settings(
                             selected = bestMatchTemp,
                             onSelect = {
                                 applyButtonIsEnabled =
-                                    applyButtonIsEnabled.copy(bestMatch =  !applyButtonIsEnabled.bestMatch)
+                                    applyButtonIsEnabled.copy(bestMatch = !applyButtonIsEnabled.bestMatch)
                                 bestMatchTemp = it
                             }
                         )
@@ -177,10 +177,7 @@ fun Settings(
             }
         }
     }
-
-
 }
-
 
 @Composable
 fun Title(onExitClick: () -> Unit) {
@@ -297,6 +294,7 @@ private fun ApplyButton(
                 indication = null,
             ) {
                 searchViewModel.saveSearchSettings(searchText, sortByDateTemp, bestMatchTemp)
+                searchViewModel.refresh()
                 onDismiss()
             }
     ) {

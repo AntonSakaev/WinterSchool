@@ -50,7 +50,6 @@ fun SearchScreen(
     val searchSettings by searchViewModel.searchParams.collectAsState()
     val isSettingsEnabled by remember { derivedStateOf { searchSettings.isEnabled() } }
 
-
     LaunchedEffect(true) {
         searchViewModel.getSearchSettings()
     }
@@ -61,21 +60,19 @@ fun SearchScreen(
             .padding(top = 28.dp)
             .padding(horizontal = 20.dp)
     ) {
-
         CustomSearchBar(
             onValueChange = searchViewModel::keywordInput,
             onFilterClick = { onSettingsClick() },
             isSettingsEnabled = isSettingsEnabled
         )
-
         Spacer(modifier = Modifier.height(20.dp))
         DisplaySettings(searchViewModel, searchSettings)
         SearchScreenStateActions(
             searchViewModel = searchViewModel,
-            onDetailClick = {            onDetailClick(it)        },
-            snackbarHostState)
+            onDetailClick = { onDetailClick(it) },
+            snackbarHostState
+        )
     }
-
 }
 
 @Composable
@@ -88,21 +85,21 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
     ) {
         if (searchSettings.authorName != "") {
             item {
-                ActiveSettings(searchSettings.authorName) {
+                ActiveSettings(searchSettings.authorName, searchViewModel) {
                     searchViewModel.clearAuthorNameFilter()
                 }
             }
         }
         if (searchSettings.sortByDate) {
             item {
-                ActiveSettings(stringResource(R.string.sort_by_date)) {
+                ActiveSettings(stringResource(R.string.sort_by_date), searchViewModel) {
                     searchViewModel.clearSortByDateFilter()
                 }
             }
         }
         if (searchSettings.bestMatch) {
             item {
-                ActiveSettings(stringResource(R.string.best_match)) {
+                ActiveSettings(stringResource(R.string.best_match), searchViewModel) {
                     searchViewModel.clearBestMatchFilter()
                 }
             }
@@ -111,7 +108,7 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
 }
 
 @Composable
-fun ActiveSettings(settingsName: String, onClearPress: () -> Unit) {
+fun ActiveSettings(settingsName: String, viewModel: SearchScreenViewModel, onClearPress: () -> Unit) {
     Box(
         modifier = Modifier
             .width(160.dp)
@@ -140,7 +137,9 @@ fun ActiveSettings(settingsName: String, onClearPress: () -> Unit) {
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                        onClick = { onClearPress() }
+                        onClick = {
+                            onClearPress()
+                        viewModel.refresh()}
                     )
             )
         }

@@ -9,7 +9,23 @@ import javax.inject.Inject
 class GetBooksInfoUseCase @Inject constructor(
     private val booksRepository: BooksRepository
 ) {
-    suspend operator fun invoke(request: String): Flow<OperationResult<Books>> {
-        return booksRepository.getBooksInfo(request)
+    suspend operator fun invoke(
+        request: String, author: String? = null,
+        sortByDate: Boolean? = null,
+        sortByRelevance: Boolean? = null,
+        page: Int = 0
+    ): Flow<OperationResult<Books>> {
+        val startIndex = page * PAGE_SIZE
+        return booksRepository.getBooksInfo(
+            request = request,
+            author = author,
+            sortByDate = sortByDate,
+            sortByRelevance = sortByRelevance,
+            startIndex = startIndex
+        )
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 5
     }
 }

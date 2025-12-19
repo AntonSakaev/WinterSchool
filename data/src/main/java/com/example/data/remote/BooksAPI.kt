@@ -11,7 +11,10 @@ interface BooksAPI {
 
     @GET("volumes")
     suspend fun getBooksInfo(
-        @Query("q") bookTitle: String
+        @Query("q") bookTitle: String,
+        @Query("orderBy") orderBy: String? = null,
+        @Query("startIndex") startIndex: Int = 0,
+        @Query("maxResults") maxResults: Int = 5
     ): Response<BooksEntity>
 
     @GET("volumes/{selectedBookId}")

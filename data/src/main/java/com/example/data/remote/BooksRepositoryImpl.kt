@@ -19,9 +19,24 @@ class BooksRepositoryImpl
     private val itemsMapper: ItemsMapper
 ) : BooksRepository, RemoteDataSource() {
 
-    override suspend fun getBooksInfo(request: String): Flow<OperationResult<Books>> {
-        return flow {emit(OperationResult.Loading)
-           val responseResult = safeApiCall { booksAPI.getBooksInfo(request) }.flatMapIfSuccess { booksEntity ->
+    override suspend fun getBooksInfo(
+        request: String,
+        author: String?,
+        sortByDate: Boolean?,
+        sortByRelevance: Boolean?,
+        startIndex: Int
+    ): Flow<OperationResult<Books>> {
+        return flow {
+            emit(OperationResult.Loading)
+            val searchQuery = buildQuery(request, author)
+            val orderBy = buildOrderBy(sortByDate, sortByRelevance)
+            val responseResult = safeApiCall {
+                booksAPI.getBooksInfo(
+                    bookTitle = searchQuery,
+                    orderBy = orderBy,
+                    startIndex = startIndex
+                )
+            }.flatMapIfSuccess { booksEntity ->
                 booksMapper(booksEntity).toSuccessResult()
             }
             emit(responseResult)
@@ -29,11 +44,32 @@ class BooksRepositoryImpl
     }
 
     override suspend fun getSelectedBook(selectedBookId: String): Flow<OperationResult<Items>> {
-        return flow {emit(OperationResult.Loading)
-            val responseResult = safeApiCall { booksAPI.getSelectedBookInfo(selectedBookId)}.flatMapIfSuccess { itemsEntity ->
-                itemsMapper(itemsEntity).toSuccessResult()
-            }
+        return flow {
+            emit(OperationResult.Loading)
+            val responseResult =
+                safeApiCall { booksAPI.getSelectedBookInfo(selectedBookId) }.flatMapIfSuccess { itemsEntity ->
+                    itemsMapper(itemsEntity).toSuccessResult()
+                }
             emit(responseResult)
+        }
+    }
+
+    private fun buildQuery(searchQuery: String, author: String?): String {
+        return  if (!author.isNullOrBlank()) {
+            "$searchQuery inauthor:$author"
+        } else {
+            searchQuery
+        }
+    }
+
+    private fun buildOrderBy(
+        sortByDate: Boolean?,
+        sortByRelevance: Boolean?
+    ): String? {
+        return when {
+            sortByDate == true -> "newest"
+            sortByRelevance == true -> "relevance"
+            else -> null
         }
     }
 }

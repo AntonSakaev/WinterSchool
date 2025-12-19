@@ -7,8 +7,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
 
-    suspend fun getBooksInfo(request: String): Flow<OperationResult<Books>>
+    suspend fun getBooksInfo(
+        request: String,
+        author: String?,
+        sortByDate: Boolean?,
+        sortByRelevance: Boolean?,
+        startIndex: Int
+    ): Flow<OperationResult<Books>>
 
-    suspend fun getSelectedBook (selectedBookId: String): Flow<OperationResult<Items>>
-
+    suspend fun getSelectedBook(selectedBookId: String): Flow<OperationResult<Items>>
 }
