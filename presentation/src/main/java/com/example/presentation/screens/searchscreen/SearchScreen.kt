@@ -1,5 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -139,7 +140,8 @@ fun ActiveSettings(settingsName: String, viewModel: SearchScreenViewModel, onCle
                         indication = null,
                         onClick = {
                             onClearPress()
-                        viewModel.refresh()}
+                            viewModel.refresh()
+                        }
                     )
             )
         }

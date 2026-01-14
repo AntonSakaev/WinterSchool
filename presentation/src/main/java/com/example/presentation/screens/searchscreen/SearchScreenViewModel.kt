@@ -1,5 +1,6 @@
 package com.example.presentation.screens.searchscreen
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.domain.local.db.usecases.AddFavoriteUseCase
 import com.example.domain.local.db.usecases.CheckIsFavoriteUseCase
@@ -94,10 +95,10 @@ class SearchScreenViewModel @Inject constructor(
                     onError = ::onError
                 )
                 if (!loadMore) {
-                currentPage = 0
-            } else {
-                currentPage++
-            }
+                    currentPage = 0
+                } else {
+                    currentPage++
+                }
             }
 
         } else {
@@ -107,6 +108,8 @@ class SearchScreenViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("SETsortByDateTemp", "ApplyButton: ${_searchParams.value.sortByDate}")
+            Log.d("SETbestMatchTemp", "ApplyButton: ${_searchParams.value.bestMatch}")
             launchSearch(
                 lastKnowKeyword.value,
                 author = _searchParams.value.authorName,
@@ -114,7 +117,9 @@ class SearchScreenViewModel @Inject constructor(
                 sortByRelevance = _searchParams.value.bestMatch,
                 loadMore = false
             )
-        }
+
+        Log.d("REF_sortByDateTemp", "ApplyButton: ${_searchParams.value.sortByDate}")
+        Log.d("REF_bestMatchTemp", "ApplyButton: ${_searchParams.value.bestMatch}") }
     }
 
     private fun onError(message: String) {
@@ -173,18 +178,34 @@ class SearchScreenViewModel @Inject constructor(
         sortByDate: Boolean,
         bestMatch: Boolean
     ) {
-        val params = SearchSettings(
-            authorName = authorName, sortByDate = sortByDate, bestMatch = bestMatch
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            saveSearchSettingsUseCase(params)
+        updateSearchSettings {
+            copy(authorName = authorName, sortByDate = sortByDate, bestMatch = bestMatch)
         }
-        getSearchSettings()
     }
 
     fun getSearchSettings() {
         viewModelScope.launch(Dispatchers.IO) {
             _searchParams.value = getSearchSettingsUseCase()
+        }
+        Log.d("GETsortByDateTemp", "ApplyButton: ${_searchParams.value.sortByDate}")
+        Log.d("GETbestMatchTemp", "ApplyButton: ${_searchParams.value.bestMatch}")
+    }
+
+    fun clearAuthorNameFilter() {
+        updateSearchSettings {
+            copy(authorName = "")
+        }
+    }
+
+    fun clearSortByDateFilter() {
+        updateSearchSettings {
+            copy(sortByDate = false)
+        }
+    }
+
+    fun clearBestMatchFilter() {
+        updateSearchSettings {
+            copy(bestMatch = false)
         }
     }
 
@@ -192,20 +213,8 @@ class SearchScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val newParams = _searchParams.value.update()
             saveSearchSettingsUseCase(newParams)
-            getSearchSettings()
+         //   _searchParams.value = getSearchSettingsUseCase()
         }
-    }
-
-    fun clearAuthorNameFilter() = updateSearchSettings {
-        copy(authorName = "")
-    }
-
-    fun clearSortByDateFilter() = updateSearchSettings {
-        copy(sortByDate = false)
-    }
-
-    fun clearBestMatchFilter() = updateSearchSettings {
-        copy(bestMatch = false)
     }
     //endregion
 }
