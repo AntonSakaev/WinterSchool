@@ -1,6 +1,5 @@
 package com.example.presentation.screens.searchscreen
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -49,10 +48,16 @@ fun SearchScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val searchSettings by searchViewModel.searchParams.collectAsState()
+    val needUpdate by searchViewModel.settingsHasChanged.collectAsState()
     val isSettingsEnabled by remember { derivedStateOf { searchSettings.isEnabled() } }
 
     LaunchedEffect(true) {
         searchViewModel.getSearchSettings()
+    }
+
+    LaunchedEffect(needUpdate) {
+        if (needUpdate)
+            searchViewModel.refresh()
     }
 
     Column(
@@ -86,21 +91,21 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
     ) {
         if (searchSettings.authorName != "") {
             item {
-                ActiveSettings(searchSettings.authorName, searchViewModel) {
+                ActiveSettings(searchSettings.authorName) {
                     searchViewModel.clearAuthorNameFilter()
                 }
             }
         }
         if (searchSettings.sortByDate) {
             item {
-                ActiveSettings(stringResource(R.string.sort_by_date), searchViewModel) {
+                ActiveSettings(stringResource(R.string.sort_by_date)) {
                     searchViewModel.clearSortByDateFilter()
                 }
             }
         }
         if (searchSettings.bestMatch) {
             item {
-                ActiveSettings(stringResource(R.string.best_match), searchViewModel) {
+                ActiveSettings(stringResource(R.string.best_match)) {
                     searchViewModel.clearBestMatchFilter()
                 }
             }
@@ -109,7 +114,10 @@ fun DisplaySettings(searchViewModel: SearchScreenViewModel, searchSettings: Sear
 }
 
 @Composable
-fun ActiveSettings(settingsName: String, viewModel: SearchScreenViewModel, onClearPress: () -> Unit) {
+fun ActiveSettings(
+    settingsName: String,
+    onClearPress: () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(160.dp)
@@ -140,7 +148,6 @@ fun ActiveSettings(settingsName: String, viewModel: SearchScreenViewModel, onCle
                         indication = null,
                         onClick = {
                             onClearPress()
-                            viewModel.refresh()
                         }
                     )
             )

@@ -1,6 +1,5 @@
 package com.example.presentation.screens.searchscreen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -295,7 +294,6 @@ private fun ApplyButton(
                 indication = null,
             ) {
                 searchViewModel.saveSearchSettings(searchText, sortByDateTemp, bestMatchTemp)
-                searchViewModel.refresh()
                 onDismiss()
             }
     ) {
