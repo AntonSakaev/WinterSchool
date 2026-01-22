@@ -89,7 +89,6 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.r
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 plugin-serialization = {id="org.jetbrains.kotlin.plugin.serialization", version.ref = "serializationPlugin"}
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

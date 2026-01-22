@@ -1,22 +1,21 @@
 plugins {
-
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.plugin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
 }
-
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.DEFAULT
+    }
+}
 android {
     namespace = "com.example.presentation"
     compileSdk = 36
-
     defaultConfig {
         minSdk = 24
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -32,12 +31,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-        }
-    }
-
     buildFeatures {
         compose = true
     }
@@ -47,7 +40,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -84,5 +76,4 @@ dependencies {
 
     implementation(project(":domain"))
     implementation(project(":data"))
-  //  implementation(project(":app"))
 }
