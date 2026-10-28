@@ -45,7 +45,6 @@ import com.example.presentation.theme.Regular_14
 import com.example.presentation.theme.Regular_16
 import com.example.presentation.theme.Rose
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailScreen(
     innerPaddingValues: PaddingValues,

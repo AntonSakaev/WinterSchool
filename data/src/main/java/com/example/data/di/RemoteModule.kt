@@ -11,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -34,12 +35,23 @@ object RemoteModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClientInterceptor(): OkHttpClient {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.HEADERS
-        return OkHttpClient
-            .Builder()
-            .addInterceptor(interceptor)
+    fun provideOkHttpClient(): OkHttpClient {
+        val apiKey = com.example.data.BuildConfig.API_KEY
+
+        val authInterceptor = Interceptor { chain ->
+            val original = chain.request()
+            val url = original.url.newBuilder()
+                .addQueryParameter("key", apiKey)
+                .build()
+            chain.proceed(original.newBuilder().url(url).build())
+        }
+
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
+
+        return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
     }
 

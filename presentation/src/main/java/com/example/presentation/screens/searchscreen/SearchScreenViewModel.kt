@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
@@ -42,7 +43,7 @@ class SearchScreenViewModel @Inject constructor(
     private val _keyText = MutableStateFlow("")
 
     @OptIn(FlowPreview::class)
-    private val keyText = _keyText.asStateFlow().debounce(2000)
+    private val keyText = _keyText.asStateFlow().debounce(2000.milliseconds)
 
     private val lastKnowKeyword = MutableStateFlow("")
 

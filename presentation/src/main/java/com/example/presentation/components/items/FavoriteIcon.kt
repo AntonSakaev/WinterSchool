@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.domain.local.db.BookInfo
@@ -43,7 +43,7 @@ fun FavoriteIcon(
     snackbarHostState: SnackbarHostState
 ) {
     var isPressed by remember { mutableStateOf(isFavorite) }
-    val context = LocalContext.current
+    val localResourses = LocalResources.current
 
     val snackBarEvents: MutableState<SnackbarViewEvent?> =
         remember { mutableStateOf(null) }
@@ -56,13 +56,13 @@ fun FavoriteIcon(
         if (isPressed) {
             viewModel.deleteFavorite(bookInfo.bookId.toString())
             triggerSnackbar(
-                message = ifError ?: context.getString(R.string.book_delete_sucsess),
+                message = ifError ?: localResourses.getString(R.string.book_delete_sucsess),
                 isError = !ifError.isNullOrBlank()
             )
         } else {
             viewModel.addFavorite(bookInfo)
             triggerSnackbar(
-                message = ifError ?: context.getString(R.string.add_book_sucsess),
+                message = ifError ?: localResourses.getString(R.string.add_book_sucsess),
                 isError = !ifError.isNullOrBlank()
             )
         }

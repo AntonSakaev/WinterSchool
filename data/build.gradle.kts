@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 kotlin {
     compilerOptions {
@@ -30,6 +31,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+secrets {
+    propertiesFileName = "local.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
+    ignoreList.add("ignoreThisList")
 }
 
 dependencies {
