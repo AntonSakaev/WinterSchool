@@ -13,6 +13,9 @@ kotlin {
 android {
     namespace = "com.example.data"
     compileSdk = 36
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -25,6 +28,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            buildConfigField("String", "API_KEY", providers.gradleProperty("API_KEY").orElse("\"YOUR_API_KEY_HERE\"").get())
         }
     }
     compileOptions {
