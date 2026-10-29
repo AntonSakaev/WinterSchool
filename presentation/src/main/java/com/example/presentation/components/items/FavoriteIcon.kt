@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.local.db.BookInfo
 import com.example.presentation.R
 import com.example.presentation.components.icons.Favorite
-import com.example.presentation.components.items.snackbar.LaunchSnackBar
+import com.example.presentation.components.items.snackbar.CustomSnackbarVisuals
 import com.example.presentation.components.items.snackbar.SnackbarViewEvent
 import com.example.presentation.screens.FavoriteViewModel
 import com.example.presentation.theme.LightGray
@@ -48,23 +50,20 @@ fun FavoriteIcon(
     val snackBarEvents: MutableState<SnackbarViewEvent?> =
         remember { mutableStateOf(null) }
 
-     fun triggerSnackbar(message: String, isError: Boolean) {
-        snackBarEvents.value = SnackbarViewEvent(message, isError)
+    var isShowingSnackbar by remember { mutableStateOf(false) }
+
+    fun triggerSnackbar(message: String, isError: Boolean) {
+        if (!isShowingSnackbar) {
+            snackBarEvents.value = SnackbarViewEvent(message, isError)
+            isShowingSnackbar = true
+        }
     }
 
     fun onImageClick(isPressed: Boolean) {
         if (isPressed) {
             viewModel.deleteFavorite(bookInfo.bookId.toString())
-            triggerSnackbar(
-                message = ifError ?: localResourses.getString(R.string.book_delete_sucsess),
-                isError = !ifError.isNullOrBlank()
-            )
         } else {
             viewModel.addFavorite(bookInfo)
-            triggerSnackbar(
-                message = ifError ?: localResourses.getString(R.string.add_book_sucsess),
-                isError = !ifError.isNullOrBlank()
-            )
         }
     }
 
@@ -106,12 +105,19 @@ fun FavoriteIcon(
             tint = if (isPressed) Red else LightGray
         )
     }
-    snackBarEvents.value?.let {
-            LaunchSnackBar(
-                key = isPressed,
-                snackbarHostState = snackbarHostState,
-                message = it.message,
-                isError = it.isError
+    LaunchedEffect(snackBarEvents.value) {
+        snackBarEvents.value?.let { event ->
+            snackbarHostState.showSnackbar(
+                visuals = CustomSnackbarVisuals(
+                    actionLabel = "",
+                    duration = SnackbarDuration.Short,
+                    message = event.message,
+                    withDismissAction = true,
+                    isError = event.isError
+                )
             )
+            isShowingSnackbar = false
+            snackBarEvents.value = null
+        }
     }
 }

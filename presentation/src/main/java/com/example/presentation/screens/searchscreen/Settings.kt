@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.domain.local.prefs.models.SearchSettings
 import com.example.presentation.R
 import com.example.presentation.components.icons.Clear
 import com.example.presentation.components.icons.More
@@ -56,7 +55,6 @@ import com.example.presentation.theme.Regular_14
 import com.example.presentation.theme.Regular_16
 import com.example.presentation.theme.Rose
 import com.example.presentation.theme.White
-import kotlinx.coroutines.delay
 
 @Composable
 fun Settings(
@@ -71,19 +69,16 @@ fun Settings(
 
     val interactionSource = remember { MutableInteractionSource() }
     var visible by remember { mutableStateOf(false) }
-    var applyButtonIsEnabled by remember { mutableStateOf(SearchSettings()) }
+    var applyButtonTextEnabled by remember { mutableStateOf(false) }
 
 
-    //Для запуска анимации при входе меням visible
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         visible = true
         searchViewModel.getSearchSettings()
     }
 
-    //задержка для отыгрывания анимации перед закрытием окна
     LaunchedEffect(visible) {
         if (!visible) {
-            delay(10)
             onDismiss()
         }
     }
@@ -129,9 +124,7 @@ fun Settings(
                         searchText = searchText,
                         onValueChange = {
                             searchText = it
-                            applyButtonIsEnabled = applyButtonIsEnabled.copy(
-                                changedName = true
-                            )
+                            applyButtonTextEnabled = it.isNotBlank()
                         },
                         interactionSource = interactionSource
                     )
@@ -148,25 +141,17 @@ fun Settings(
                         FilterChip(
                             text = stringResource(R.string.by_data),
                             selected = sortByDateTemp,
-                            onSelect = {
-                                applyButtonIsEnabled =
-                                    applyButtonIsEnabled.copy(sortByDate = !applyButtonIsEnabled.sortByDate)
-                                sortByDateTemp = it
-                            }
+                            onSelect = { sortByDateTemp = it }
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         FilterChip(
                             text = stringResource(R.string.best_match),
                             selected = bestMatchTemp,
-                            onSelect = {
-                                applyButtonIsEnabled =
-                                    applyButtonIsEnabled.copy(bestMatch = !applyButtonIsEnabled.bestMatch)
-                                bestMatchTemp = it
-                            }
+                            onSelect = { bestMatchTemp = it }
                         )
                     }
                     ApplyButton(
-                        enabled = applyButtonIsEnabled,
+                        enabled = applyButtonTextEnabled || sortByDateTemp || bestMatchTemp,
                         searchText = searchText,
                         sortByDateTemp = sortByDateTemp,
                         bestMatchTemp = bestMatchTemp,
@@ -278,7 +263,7 @@ private fun FilterChip(
 
 @Composable
 private fun ApplyButton(
-    enabled: SearchSettings,
+    enabled: Boolean,
     searchText: String,
     sortByDateTemp: Boolean,
     bestMatchTemp: Boolean,
@@ -300,11 +285,11 @@ private fun ApplyButton(
 
         Text(
             text = stringResource(R.string.apply),
-            style = if (enabled.isEnabled()) Regular_16.copy(color = White) else Regular_16,
+            style = if (enabled) Regular_16.copy(color = White) else Regular_16,
             modifier = Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = if (enabled.isEnabled()) Blue else Rose,
+                    color = if (enabled) Blue else Rose,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(horizontal = 24.dp, vertical = 10.dp)

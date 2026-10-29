@@ -6,7 +6,7 @@ plugins {
 }
 kotlin {
     compilerOptions {
-        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.DEFAULT
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
     }
 }
 
@@ -23,7 +23,7 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -55,13 +55,10 @@ dependencies {
     implementation(libs.moshi.kotlin.codegen)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
-    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.rxjava2)
-
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 

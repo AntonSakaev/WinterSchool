@@ -26,7 +26,7 @@ abstract class FavoriteViewModel(
     val favoriteResults = _favoriteResults.asStateFlow()
 
     fun addFavorite(bookInfo: BookInfo) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             addFavoriteUseCase(bookInfo).handle(
                 onSuccess = {
                     checkThisForFavorite(bookInfo.bookId.toString())
@@ -39,7 +39,7 @@ abstract class FavoriteViewModel(
     }
 
     fun deleteFavorite(bookId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             deleteFavoriteUseCase(bookId).handle(
                 onSuccess = {
                     checkThisForFavorite(bookId)

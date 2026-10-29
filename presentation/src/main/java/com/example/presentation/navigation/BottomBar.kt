@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navOptions
 import com.example.presentation.R
 import com.example.presentation.components.icons.Favorite
 import com.example.presentation.components.icons.Search
@@ -71,7 +72,11 @@ fun BottomBar(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null // отключает ripple-эффект
                         ) {
-                            navController.navigate(item.route)
+                            val navOptions = navOptions {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                            navController.navigate(item.route, navOptions)
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)

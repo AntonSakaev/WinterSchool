@@ -73,10 +73,9 @@ fun FavoriteScreen(
         ) {
             items(
                 count = favoritesBooks.size,
-              /*  key = { index ->
-                    favoritesBooks[index]
-                 //   "${book.id}_${favoriteResults[book.id]}"
-                }*/)
+                key = { index ->
+                    favoritesBooks[index].bookId ?: "item_$index"
+                })
             { booksIndex ->
                 val item = favoritesBooks[booksIndex]
                 BookCard(

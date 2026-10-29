@@ -36,7 +36,7 @@ fun ProgressIndicator() {
             modifier = Modifier.align(Alignment.Center),
             color = Color.White,
             trackColor = Color.Blue,
-            gapSize = (-5.0).dp
+            gapSize = 0.dp
         )
     }
 }

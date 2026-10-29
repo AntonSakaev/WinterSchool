@@ -55,8 +55,7 @@ fun CustomSnackbar(
             )
             Box(modifier = Modifier.size(24.dp)) {
                 Icon(
-                    modifier = Modifier.clickable {data.dismiss()},
-
+                    modifier = Modifier.clickable { data.dismiss() },
                     contentDescription = "Закрыть",
                     tint = White,
                     imageVector = Icons.Default.Close,
@@ -65,15 +64,11 @@ fun CustomSnackbar(
         }
     }
 }
-    data class CustomSnackbarVisuals(
-        override val actionLabel: String,
-        override val duration: SnackbarDuration,
-        override val message: String,
-        override val withDismissAction: Boolean,
-        val isError: Boolean,
-    ) : SnackbarVisuals
 
-    data class SnackbarViewEvent(
-        val message: String,
-        val isError: Boolean
-    )
+data class CustomSnackbarVisuals(
+    override val actionLabel: String,
+    override val duration: SnackbarDuration,
+    override val message: String,
+    override val withDismissAction: Boolean,
+    val isError: Boolean,
+) : SnackbarVisuals

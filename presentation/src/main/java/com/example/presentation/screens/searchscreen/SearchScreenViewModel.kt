@@ -13,8 +13,8 @@ import com.example.presentation.components.handle
 import com.example.presentation.screens.FavoriteViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -42,7 +42,6 @@ class SearchScreenViewModel @Inject constructor(
 
     private val _keyText = MutableStateFlow("")
 
-    @OptIn(FlowPreview::class)
     private val keyText = _keyText.asStateFlow().debounce(2000.milliseconds)
 
     private val lastKnowKeyword = MutableStateFlow("")
@@ -53,7 +52,8 @@ class SearchScreenViewModel @Inject constructor(
     private val _settingsHasChanged = MutableStateFlow(false)
     val settingsHasChanged = _settingsHasChanged
 
-    private var currentPage = 0
+    private val _currentPage = MutableStateFlow(0)
+    private val currentPage: StateFlow<Int> = _currentPage
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,7 +84,7 @@ class SearchScreenViewModel @Inject constructor(
     ) {
         _favoriteResults.value.clear()
         if (keyword.isNotEmpty()) {
-            val page = if (loadMore) currentPage else 0
+            val page = if (loadMore) _currentPage.value else 0
             getBooksInfoUseCase(
                 request = keyword,
                 author = author,
@@ -98,9 +98,9 @@ class SearchScreenViewModel @Inject constructor(
                     onError = ::onError
                 )
                 if (!loadMore) {
-                    currentPage = 0
+                    _currentPage.value = 0
                 } else {
-                    currentPage++
+                    _currentPage.value++
                 }
             }
 

@@ -2,7 +2,7 @@ package com.example.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-sealed class Screens () {
+sealed class Screens {
     @Serializable
     data object SearchScreen : Screens()
 

@@ -60,12 +60,11 @@ fun CustomSearchBar(
             value = searchText,
             onValueChange = { value ->
                 searchText = value
-                onValueChange(searchText)
+                onValueChange(value)
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    // Действие при нажатии кнопки "Поиск"
                     onValueChange(searchText)
                 }
             ),
@@ -90,6 +89,7 @@ fun CustomSearchBar(
                     trailingIcon = {
                         IconsContainer(Icons.Clear, stringResource(R.string.clear)) {
                             searchText = ""
+                            onValueChange("")
                         }
                     },
                     colors = TextFieldDefaults.colors(

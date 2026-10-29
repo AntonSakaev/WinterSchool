@@ -91,17 +91,13 @@ fun DetailScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             )
             {
-                when {
-                    !dBState.isLoading && favoriteResults[bookId] != null -> {
-                        FavoriteIcon(
-                            isFavorite = favoriteResults[bookId] == true,
-                            bookInfo = state.selectedBook ?: BookInfo(),
-                            ifError = state.errorMessage,
-                            viewModel = detailScreenViewModel,
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
-                }
+                FavoriteIcon(
+                    isFavorite = favoriteResults[bookId] == true,
+                    bookInfo = state.selectedBook ?: BookInfo(),
+                    ifError = state.errorMessage,
+                    viewModel = detailScreenViewModel,
+                    snackbarHostState = snackbarHostState
+                )
             }
         }
         when {

@@ -2,7 +2,6 @@ package com.example.data.di
 
 import android.content.Context
 import com.example.data.local.pfrefs.AppPrefs
-import com.example.data.local.pfrefs.AppPrefsImpl
 import com.example.data.local.pfrefs.mappers.ToSearchSettingsEntityMapper
 import com.example.data.local.pfrefs.mappers.ToSearchSettingsMapper
 import com.example.domain.local.prefs.AppPrefsRepository
@@ -30,6 +29,6 @@ object PreferenceModule {
         toSearchSettingsMapper: ToSearchSettingsMapper,
         toSearchSettingsEntityMapper: ToSearchSettingsEntityMapper
     ): AppPrefsRepository {
-        return AppPrefsImpl(appPreferences, toSearchSettingsMapper, toSearchSettingsEntityMapper)
+        return com.example.data.local.pfrefs.AppPrefsImpl(appPreferences, toSearchSettingsMapper, toSearchSettingsEntityMapper)
     }
 }

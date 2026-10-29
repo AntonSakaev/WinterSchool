@@ -51,7 +51,7 @@ fun SearchScreen(
     val needUpdate by searchViewModel.settingsHasChanged.collectAsState()
     val isSettingsEnabled by remember { derivedStateOf { searchSettings.isEnabled() } }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         searchViewModel.getSearchSettings()
     }
 

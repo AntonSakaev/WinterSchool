@@ -2,6 +2,8 @@ package com.example.data.di
 
 import com.example.data.remote.BooksAPI
 import com.example.data.remote.BooksRepositoryImpl
+import com.example.data.remote.RemoteDataSource
+import com.example.data.remote.RemoteDataSourceImpl
 import com.example.data.remote.mappers.BooksMapper
 import com.example.data.remote.mappers.ItemsMapper
 import com.example.domain.remote.BooksRepository
@@ -61,8 +63,14 @@ object RemoteModule {
 
     @Singleton
     @Provides
-    fun provideRegisterApi(retrofit: Retrofit): BooksAPI {
+    fun provideBooksAPI(retrofit: Retrofit): BooksAPI {
         return retrofit.create(BooksAPI::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRemoteDataSource(): RemoteDataSource {
+        return RemoteDataSourceImpl()
     }
 
     @Singleton
@@ -70,8 +78,9 @@ object RemoteModule {
     fun provideBooksRepository(
         booksAPI: BooksAPI,
         booksMapper: BooksMapper,
-        itemsMapper: ItemsMapper
+        itemsMapper: ItemsMapper,
+        remoteDataSource: RemoteDataSource
     ): BooksRepository {
-        return BooksRepositoryImpl(booksAPI, booksMapper, itemsMapper)
+        return BooksRepositoryImpl(booksAPI, booksMapper, itemsMapper, remoteDataSource)
     }
 }

@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class BooksRepositoryImpl
-@Inject constructor(
+class BooksRepositoryImpl(
     private val booksAPI: BooksAPI,
     private val booksMapper: BooksMapper,
-    private val itemsMapper: ItemsMapper
-) : BooksRepository, RemoteDataSource() {
+    private val itemsMapper: ItemsMapper,
+    private val remoteDataSource: RemoteDataSource
+) : BooksRepository {
 
     override suspend fun getBooksInfo(
         request: String,
@@ -30,7 +30,7 @@ class BooksRepositoryImpl
             emit(OperationResult.Loading)
             val searchQuery = buildQuery(request, author)
             val orderBy = buildOrderBy(sortByDate, sortByRelevance)
-            val responseResult = safeApiCall {
+            val responseResult = remoteDataSource.safeApiCall {
                 booksAPI.getBooksInfo(
                     bookTitle = searchQuery,
                     orderBy = orderBy,
@@ -47,7 +47,7 @@ class BooksRepositoryImpl
         return flow {
             emit(OperationResult.Loading)
             val responseResult =
-                safeApiCall { booksAPI.getSelectedBookInfo(selectedBookId) }.flatMapIfSuccess { itemsEntity ->
+                remoteDataSource.safeApiCall { booksAPI.getSelectedBookInfo(selectedBookId) }.flatMapIfSuccess { itemsEntity ->
                     itemsMapper(itemsEntity).toSuccessResult()
                 }
             emit(responseResult)
@@ -55,7 +55,7 @@ class BooksRepositoryImpl
     }
 
     private fun buildQuery(searchQuery: String, author: String?): String {
-        return  if (!author.isNullOrBlank()) {
+        return if (!author.isNullOrBlank()) {
             "$searchQuery inauthor:$author"
         } else {
             searchQuery

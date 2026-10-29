@@ -4,19 +4,18 @@ import com.example.data.local.pfrefs.mappers.ToSearchSettingsEntityMapper
 import com.example.data.local.pfrefs.mappers.ToSearchSettingsMapper
 import com.example.domain.local.prefs.AppPrefsRepository
 import com.example.domain.local.prefs.models.SearchSettings
-import javax.inject.Inject
 
-class AppPrefsImpl @Inject constructor(
+class AppPrefsImpl(
     private val appPreferences: AppPrefs,
     private val toSearchSettingsMapper: ToSearchSettingsMapper,
     private val toSearchSettingsEntityMapper: ToSearchSettingsEntityMapper
-): AppPrefsRepository {
+) : AppPrefsRepository {
 
     override suspend fun saveSearchSettings(params: SearchSettings) {
         appPreferences.saveSearchSettings(toSearchSettingsEntityMapper(params))
     }
 
-    override suspend fun  getSearchSettings(): SearchSettings {
+    override suspend fun getSearchSettings(): SearchSettings {
         return toSearchSettingsMapper(appPreferences.getSearchSettings())
     }
 }

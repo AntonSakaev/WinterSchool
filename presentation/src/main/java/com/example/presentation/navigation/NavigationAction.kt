@@ -5,24 +5,20 @@ import androidx.navigation.NavController
 class NavigationAction(private val navController: NavController) {
 
     fun toSettingsScreen() {
-        navController.navigate(
-            route = Screens.SettingsScreen
-        )
+        navController.navigate(Screens.SettingsScreen)
     }
 
     fun toSearchScreen() {
-        navController.navigate(
-            route = Screens.SearchScreen
-        ) { popUpTo<Screens.SettingsScreen> { inclusive = true } }
+        navController.navigate(Screens.SearchScreen) {
+            popUpTo(Screens.SearchScreen) { inclusive = false }
+        }
     }
 
     fun toDetailScreen(selectedBookId: String) {
-        navController.navigate(
-            route = Screens.DetailScreen(selectedBookId)
-        )
+        navController.navigate(Screens.DetailScreen(selectedBookId))
     }
 
-    fun backClick(){
+    fun backClick() {
         navController.popBackStack()
     }
 }

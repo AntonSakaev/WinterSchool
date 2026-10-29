@@ -23,48 +23,49 @@ fun NavigationGraph(
     snackbarHostState: SnackbarHostState
 ) {
 
-    val searchViewModel: SearchScreenViewModel = hiltViewModel()
-    val detailScreenViewModel: DetailScreenViewModel = hiltViewModel()
-    val favoriteScreenViewModel: FavoriteScreenViewModel = hiltViewModel()
-    val navigationAction = NavigationAction(navController)
-
-    NavHost(navController, startDestination = Screens.SearchScreen) {
+    NavHost(
+        navController = navController,
+        startDestination = Screens.SearchScreen
+    ) {
 
         composable<Screens.SearchScreen> {
+            val viewModel: SearchScreenViewModel = hiltViewModel()
             SearchScreen(
-                searchViewModel = searchViewModel,
+                searchViewModel = viewModel,
                 innerPaddingValues = innerPadding,
-                onSettingsClick = { navigationAction.toSettingsScreen() },
-                onDetailClick = { navigationAction.toDetailScreen(it) },
+                onSettingsClick = { navController.navigate(Screens.SettingsScreen) },
+                onDetailClick = { navController.navigate(Screens.DetailScreen(it)) },
                 snackbarHostState
             )
         }
 
         composable<Screens.FavoriteScreen> {
+            val viewModel: FavoriteScreenViewModel = hiltViewModel()
             FavoriteScreen(
                 innerPaddingValues = innerPadding,
-                favoriteScreenViewModel = favoriteScreenViewModel,
-                onExitClick = { navigationAction.backClick()},
-                onDetailClick = { navigationAction.toDetailScreen(it) },
+                favoriteScreenViewModel = viewModel,
+                onExitClick = { navController.popBackStack() },
+                onDetailClick = { navController.navigate(Screens.DetailScreen(it)) },
                 snackbarHostState = snackbarHostState
             )
         }
 
         composable<Screens.DetailScreen> { backStackEntry ->
             val bookId = backStackEntry.toRoute<Screens.DetailScreen>().selectedBookId
+            val viewModel: DetailScreenViewModel = hiltViewModel()
             DetailScreen(
                 innerPaddingValues = innerPadding,
                 bookId = bookId,
-                detailScreenViewModel = detailScreenViewModel,
-                onExitClick = { navigationAction.backClick() },
+                detailScreenViewModel = viewModel,
+                onExitClick = { navController.popBackStack() },
                 snackbarHostState
             )
-
         }
 
         composable<Screens.SettingsScreen> {
-            Settings(innerPadding, searchViewModel) {
-                navigationAction.toSearchScreen()
+            val viewModel: SearchScreenViewModel = hiltViewModel()
+            Settings(innerPadding, viewModel) {
+                navController.popBackStack(Screens.SearchScreen::class, false)
             }
         }
     }

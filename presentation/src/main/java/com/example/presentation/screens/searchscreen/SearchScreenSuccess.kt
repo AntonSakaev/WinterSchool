@@ -40,8 +40,7 @@ fun SearchScreenSuccess(
         items(
             count = books?.size ?: 0,
             key = { index ->
-                val book = books?.get(index)
-                "${book?.id}_${favoriteResults[book?.id]}"
+                books?.get(index)?.id ?: "item_$index"
             })
         { booksIndex ->
             val item = books?.get(booksIndex)

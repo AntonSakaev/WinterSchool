@@ -9,12 +9,17 @@ import com.example.data.local.pfrefs.PreferenceKeys.AUTHOR_NAME
 import com.example.data.local.pfrefs.PreferenceKeys.SORT_BY_BEST_MATCH
 import com.example.data.local.pfrefs.PreferenceKeys.SORT_BY_DATE
 import com.example.data.local.pfrefs.entities.SearchSettingsEntity
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private val Context.dataStore by preferencesDataStore(name = "SearchSettings")
 
-class AppPrefs(context: Context) {
+@Singleton
+class AppPrefs @Inject constructor(
+    private val context: Context
+) {
     private val dataStore = context.dataStore
 
     suspend fun saveSearchSettings(params: SearchSettingsEntity) {
@@ -32,7 +37,7 @@ class AppPrefs(context: Context) {
                 sortByDate = preferences[SORT_BY_DATE] ?: false,
                 bestMatch = preferences[SORT_BY_BEST_MATCH] ?: false
             )
-        }.first()
+        }.firstOrNull { true } ?: SearchSettingsEntity()
     }
 }
 

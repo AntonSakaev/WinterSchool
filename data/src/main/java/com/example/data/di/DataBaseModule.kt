@@ -2,6 +2,7 @@ package com.example.data.di
 
 import android.content.Context
 import com.example.data.local.database.AppDatabase
+import com.example.data.local.database.DatabaseDataSource
 import com.example.data.local.database.FavoriteDao
 import com.example.data.local.database.FavoriteRepositoryImpl
 import com.example.domain.local.db.FavoriteRepository
@@ -29,7 +30,16 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideFavoriteRepository(favoriteDao: FavoriteDao): FavoriteRepository {
-        return FavoriteRepositoryImpl(favoriteDao)
+    fun provideDatabaseDataSource(): DatabaseDataSource {
+        return object : DatabaseDataSource() {}
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteRepository(
+        favoriteDao: FavoriteDao,
+        dataSource: DatabaseDataSource
+    ): FavoriteRepository {
+        return FavoriteRepositoryImpl(favoriteDao, dataSource)
     }
 }
